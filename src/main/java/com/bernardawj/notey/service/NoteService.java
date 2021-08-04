@@ -15,5 +15,5 @@ public interface NoteService {
 
     NoteDTO updateNote(Integer id, NoteDTO noteDTO) throws NoteServiceException;
 
-    Void deleteNote(Integer id) throws NoteServiceException;
+    void deleteNote(Integer id) throws NoteServiceException;
 }

@@ -13,16 +13,23 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String title;
-    private String content;
+    private String writtenContent;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Note() {
     }
 
-    public Note(String title, String content) {
+    public Note(String title, String writtenContent) {
         this.title = title;
-        this.content = content;
+        this.writtenContent = writtenContent;
+    }
+
+    public Note(String title, String writtenContent, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.title = title;
+        this.writtenContent = writtenContent;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Integer getId() {
@@ -41,12 +48,12 @@ public class Note {
         this.title = title;
     }
 
-    public String getContent() {
-        return content;
+    public String getWrittenContent() {
+        return writtenContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setWrittenContent(String writtenContent) {
+        this.writtenContent = writtenContent;
     }
 
     public LocalDateTime getCreatedAt() {

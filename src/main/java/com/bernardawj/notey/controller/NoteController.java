@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping(path = "/api/v1/note")
 public class NoteController {
 
-    private NoteService noteService;
+    private final NoteService noteService;
 
     @Autowired
     public NoteController(NoteService noteService) {
@@ -34,13 +34,13 @@ public class NoteController {
     }
 
     @PostMapping()
-    public ResponseEntity<NoteDTO> addNote(NoteDTO noteDTO) throws NoteServiceException {
+    public ResponseEntity<NoteDTO> addNote(@RequestBody NoteDTO noteDTO) throws NoteServiceException {
         NoteDTO notesDTO = this.noteService.addNote(noteDTO);
         return new ResponseEntity<>(notesDTO, HttpStatus.OK);
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<NoteDTO> updateNote(@PathVariable("id") Integer id, NoteDTO noteDTO) throws NoteServiceException {
+    public ResponseEntity<NoteDTO> updateNote(@PathVariable("id") Integer id, @RequestBody NoteDTO noteDTO) throws NoteServiceException {
         NoteDTO notesDTO = this.noteService.updateNote(id, noteDTO);
         return new ResponseEntity<>(notesDTO, HttpStatus.OK);
     }

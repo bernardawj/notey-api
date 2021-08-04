@@ -1,27 +1,29 @@
 package com.bernardawj.notey.dto;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 public class NoteDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String title;
-    private String content;
+    private String writtenContent;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public NoteDTO() {
     }
 
-    public NoteDTO(Integer id, String title, String content) {
+    public NoteDTO(String title, String writtenContent) {
+        this.title = title;
+        this.writtenContent = writtenContent;
+    }
+
+    public NoteDTO(Integer id, String title, String writtenContent, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
-        this.content = content;
+        this.writtenContent = writtenContent;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Integer getId() {
@@ -40,12 +42,12 @@ public class NoteDTO {
         this.title = title;
     }
 
-    public String getContent() {
-        return content;
+    public String getWrittenContent() {
+        return writtenContent;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setWrittenContent(String writtenContent) {
+        this.writtenContent = writtenContent;
     }
 
     public LocalDateTime getCreatedAt() {
