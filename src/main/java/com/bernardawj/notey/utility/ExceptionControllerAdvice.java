@@ -1,6 +1,7 @@
 package com.bernardawj.notey.utility;
 
 import com.bernardawj.notey.exception.NoteServiceException;
+import com.bernardawj.notey.exception.UserServiceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,14 @@ public class ExceptionControllerAdvice {
 
     private static final Log LOGGER = LogFactory.getLog(ExceptionControllerAdvice.class);
 
-    private Environment environment;
+    private final Environment environment;
 
     @Autowired
     public ExceptionControllerAdvice(Environment environment) {
         this.environment = environment;
     }
 
-    @ExceptionHandler(NoteServiceException.class)
+    @ExceptionHandler({ NoteServiceException.class, UserServiceException.class })
     public ResponseEntity<ErrorInfo> serviceExceptionHandler(Exception exception) {
         LOGGER.error(exception.getMessage(), exception);
         HttpStatus status = HttpStatus.BAD_REQUEST;
