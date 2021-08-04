@@ -1,7 +1,15 @@
 package com.bernardawj.notey.repository;
 
 import com.bernardawj.notey.entity.User;
-import org.springframework.data.repository.CrudRepository;
 
-public interface UserRepository extends CrudRepository<User, Integer> {
+import java.util.List;
+import java.util.Optional;
+
+public interface UserRepository {
+
+    List<User> findAll();
+
+    Optional<User> findById(Integer id);
+
+    Optional<User> findByEmailAndPassword(String email, String password);
 }

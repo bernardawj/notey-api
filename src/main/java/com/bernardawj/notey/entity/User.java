@@ -1,15 +1,7 @@
 package com.bernardawj.notey.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String email;
     private String password;
@@ -19,7 +11,8 @@ public class User {
     public User() {
     }
 
-    public User(String email, String password, String firstName, String lastName) {
+    public User(Integer id, String email, String password, String firstName, String lastName) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.firstName = firstName;

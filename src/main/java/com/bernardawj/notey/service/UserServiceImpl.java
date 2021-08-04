@@ -4,6 +4,7 @@ import com.bernardawj.notey.dto.UserDTO;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.repository.UserRepository;
+import com.bernardawj.notey.repository.UserRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,8 @@ import java.util.Optional;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private UserRepositoryImpl userRepository;
 
     @Override
     public UserDTO getUserDetails(Integer id) throws UserServiceException {
