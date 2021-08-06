@@ -1,5 +1,9 @@
 package com.bernardawj.notey.dto;
 
+import com.bernardawj.notey.dto.project.ProjectDTO;
+
+import java.util.List;
+
 public class UserDTO {
 
     private Integer id;
@@ -8,7 +12,14 @@ public class UserDTO {
     private String firstName;
     private String lastName;
 
+    private List<ProjectDTO> assignedProjects;
+    private List<ProjectDTO> managedProjects;
+
     public UserDTO() {
+    }
+
+    public UserDTO(Integer id) {
+        this.id = id;
     }
 
     public UserDTO(Integer id, String email, String password, String firstName, String lastName) {
@@ -57,5 +68,21 @@ public class UserDTO {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public List<ProjectDTO> getAssignedProjects() {
+        return assignedProjects;
+    }
+
+    public void setAssignedProjects(List<ProjectDTO> assignedProjects) {
+        this.assignedProjects = assignedProjects;
+    }
+
+    public List<ProjectDTO> getManagedProjects() {
+        return managedProjects;
+    }
+
+    public void setManagedProjects(List<ProjectDTO> managedProjects) {
+        this.managedProjects = managedProjects;
     }
 }
