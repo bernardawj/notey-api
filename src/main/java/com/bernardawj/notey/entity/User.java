@@ -1,5 +1,7 @@
 package com.bernardawj.notey.entity;
 
+import java.util.List;
+
 public class User {
 
     private Integer id;
