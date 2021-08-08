@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/api/v1/project")
 public class ProjectController {
@@ -27,6 +28,13 @@ public class ProjectController {
     public ResponseEntity<List<ProjectDTO>> getAllManagedProjects(@PathVariable("managerId") Integer managerId)
             throws UserServiceException {
         List<ProjectDTO> projectsDTO = this.projectService.getAllManagedProjects(managerId);
+        return new ResponseEntity<>(projectsDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/assigned/{userId}")
+    public ResponseEntity<List<ProjectDTO>> getAllAssignedProjects(@PathVariable("userId") Integer userId)
+            throws UserServiceException {
+        List<ProjectDTO> projectsDTO = this.projectService.getAllAssignedProjects(userId);
         return new ResponseEntity<>(projectsDTO, HttpStatus.OK);
     }
 

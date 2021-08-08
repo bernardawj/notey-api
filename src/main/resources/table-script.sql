@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS "user";
 CREATE TABLE "user"
 (
     id         SERIAL NOT NULL UNIQUE,
-    email      TEXT   NOT NULL,
+    email      TEXT   NOT NULL UNIQUE,
     password   TEXT   NOT NULL,
     first_name TEXT   NOT NULL,
     last_name  TEXT   NOT NULL
@@ -19,6 +19,7 @@ CREATE TABLE project
     description TEXT      NOT NULL,
     start_at    TIMESTAMP NOT NULL,
     end_at      TIMESTAMP NOT NULL,
+    accessed_at TIMESTAMP NOT NULL,
     manager_id  INTEGER   NOT NULL,
     CONSTRAINT fk_manager_id FOREIGN KEY (manager_id) REFERENCES "user" (id)
 );
@@ -45,6 +46,9 @@ CREATE TABLE note
     CONSTRAINT fk_project_id FOREIGN KEY (project_id) REFERENCES project (id)
 );
 
-INSERT INTO "user" (email, password, first_name, last_name) VALUES ('ben@email.com', 'ben123', 'Ben', 'Tan');
-INSERT INTO "user" (email, password, first_name, last_name) VALUES ('carly@email.com', 'carly123', 'Carly', 'Lee');
-INSERT INTO "user" (email, password, first_name, last_name) VALUES ('daniel@email.com', 'daniel123', 'Daniel', 'Wong');
+INSERT INTO "user" (email, password, first_name, last_name)
+VALUES ('ben@email.com', 'ben123', 'Ben', 'Tan');
+INSERT INTO "user" (email, password, first_name, last_name)
+VALUES ('carly@email.com', 'carly123', 'Carly', 'Lee');
+INSERT INTO "user" (email, password, first_name, last_name)
+VALUES ('daniel@email.com', 'daniel123', 'Daniel', 'Wong');

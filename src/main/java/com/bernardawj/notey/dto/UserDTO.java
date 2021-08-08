@@ -30,6 +30,16 @@ public class UserDTO {
         this.lastName = lastName;
     }
 
+    public UserDTO(Integer id, String email, String password, String firstName, String lastName,
+                   List<ProjectDTO> assignedProjects) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.assignedProjects = assignedProjects;
+    }
+
     public Integer getId() {
         return id;
     }

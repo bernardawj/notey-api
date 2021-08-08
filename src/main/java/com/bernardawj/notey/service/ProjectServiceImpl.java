@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,22 +43,8 @@ public class ProjectServiceImpl implements ProjectService {
         // Retrieve all projects based on the manager ID
         Iterable<Project> projects = this.projectRepository.findProjectsByManagerId(userDTO.getId());
 
-        // Pack into DTO list
-        List<ProjectDTO> projectsDTO = new ArrayList<>();
-        projects.forEach(project -> {
-            ProjectDTO projectDTO = new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
-                    project.getStartAt(), project.getEndAt(), userDTO);
-
-            List<UserDTO> usersDTO = new ArrayList<>();
-            project.getUsers().forEach(user -> {
-                usersDTO.add(new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName()));
-            });
-
-            projectDTO.setUsers(usersDTO);
-            projectsDTO.add(projectDTO);
-        });
-
-        return projectsDTO;
+        // Pack into DTO list and return
+        return populateProjectsDTO(userDTO, projects);
     }
 
     @Override
@@ -64,7 +52,19 @@ public class ProjectServiceImpl implements ProjectService {
         // Check if user exists
         UserDTO userDTO = this.userService.getUserDetails(userId);
 
-        return null;
+        return userDTO.getAssignedProjects();
+    }
+
+    @Override
+    public List<ProjectDTO> getRecentlyAccessedProjects(Integer userId, Integer count) throws UserServiceException {
+        // Check if user exists
+        UserDTO userDTO = this.userService.getUserDetails(userId);
+
+        // Get recently accessed projects
+        Iterable<Project> projects = this.projectRepository.findRecentlyAccessedProjects(userDTO.getId());
+
+        // Pack into DTO list and return
+        return populateProjectsDTO(userDTO, projects);
     }
 
     @Override
@@ -101,11 +101,11 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Save to database
         Project project = new Project(projectDTO.getName(), projectDTO.getDescription(), projectDTO.getStartAt(),
-                projectDTO.getEndAt(), user);
+                projectDTO.getEndAt(), LocalDateTime.now(ZoneOffset.UTC), user);
         this.projectRepository.save(project);
 
         return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), projectDTO.getStartAt(),
-                projectDTO.getEndAt(), new UserDTO(project.getManager().getId()));
+                projectDTO.getEndAt(), projectDTO.getAccessedAt(), new UserDTO(project.getManager().getId()));
     }
 
     @Override
@@ -121,5 +121,24 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Delete project
         this.projectRepository.deleteById(projectId);
+    }
+
+    private List<ProjectDTO> populateProjectsDTO(UserDTO userDTO, Iterable<Project> projects) {
+        List<ProjectDTO> projectsDTO = new ArrayList<>();
+
+        projects.forEach(project -> {
+            ProjectDTO projectDTO = new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
+                    project.getStartAt(), project.getEndAt(), project.getAccessedAt(), userDTO);
+
+            List<UserDTO> usersDTO = new ArrayList<>();
+            project.getUsers().forEach(user -> {
+                usersDTO.add(new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName()));
+            });
+
+            projectDTO.setUsers(usersDTO);
+            projectsDTO.add(projectDTO);
+        });
+
+        return projectsDTO;
     }
 }

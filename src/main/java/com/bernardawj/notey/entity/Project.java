@@ -3,6 +3,7 @@ package com.bernardawj.notey.entity;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -15,6 +16,7 @@ public class Project {
     private String description;
     private LocalDate startAt;
     private LocalDate endAt;
+    private LocalDateTime accessedAt;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id", unique = true)
@@ -31,11 +33,13 @@ public class Project {
     public Project() {
     }
 
-    public Project(String name, String description, LocalDate startAt, LocalDate endAt, User manager) {
+    public Project(String name, String description, LocalDate startAt, LocalDate endAt, LocalDateTime accessedAt,
+                   User manager) {
         this.name = name;
         this.description = description;
         this.startAt = startAt;
         this.endAt = endAt;
+        this.accessedAt = accessedAt;
         this.manager = manager;
     }
 
@@ -77,6 +81,14 @@ public class Project {
 
     public void setEndAt(LocalDate endAt) {
         this.endAt = endAt;
+    }
+
+    public LocalDateTime getAccessedAt() {
+        return accessedAt;
+    }
+
+    public void setAccessedAt(LocalDateTime accessedAt) {
+        this.accessedAt = accessedAt;
     }
 
     public User getManager() {

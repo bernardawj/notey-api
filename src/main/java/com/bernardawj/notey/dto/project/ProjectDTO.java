@@ -3,6 +3,7 @@ package com.bernardawj.notey.dto.project;
 import com.bernardawj.notey.dto.UserDTO;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ProjectDTO {
@@ -12,6 +13,7 @@ public class ProjectDTO {
     private String description;
     private LocalDate startAt;
     private LocalDate endAt;
+    private LocalDateTime accessedAt;
 
     private UserDTO manager;
     private List<UserDTO> users;
@@ -20,12 +22,23 @@ public class ProjectDTO {
     }
 
     public ProjectDTO(Integer id, String name, String description, LocalDate startAt, LocalDate endAt,
-                      UserDTO manager) {
+                      LocalDateTime accessedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.startAt = startAt;
         this.endAt = endAt;
+        this.accessedAt = accessedAt;
+    }
+
+    public ProjectDTO(Integer id, String name, String description, LocalDate startAt, LocalDate endAt,
+                      LocalDateTime accessedAt, UserDTO manager) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.accessedAt = accessedAt;
         this.manager = manager;
     }
 
@@ -75,6 +88,14 @@ public class ProjectDTO {
 
     public void setManager(UserDTO manager) {
         this.manager = manager;
+    }
+
+    public LocalDateTime getAccessedAt() {
+        return accessedAt;
+    }
+
+    public void setAccessedAt(LocalDateTime accessedAt) {
+        this.accessedAt = accessedAt;
     }
 
     public List<UserDTO> getUsers() {
