@@ -14,7 +14,9 @@ public interface ProjectService {
 
     List<ProjectDTO> getRecentlyAccessedProjects(Integer userId, Integer count) throws UserServiceException;
 
-    void assignUserToProject(Integer projectId, Integer userId) throws ProjectServiceException, UserServiceException;
+    void assignUserToProject(Integer projectId, String email) throws ProjectServiceException, UserServiceException;
+
+    ProjectDTO getProject(Integer projectId) throws ProjectServiceException;
 
     ProjectDTO addProject(ProjectDTO projectDTO) throws UserServiceException, ProjectServiceException;
 

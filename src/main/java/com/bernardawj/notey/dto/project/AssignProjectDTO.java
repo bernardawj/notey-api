@@ -3,11 +3,11 @@ package com.bernardawj.notey.dto.project;
 public class AssignProjectDTO {
 
     private Integer projectId;
-    private Integer userId;
+    private String email;
 
-    public AssignProjectDTO(Integer projectId, Integer userId) {
+    public AssignProjectDTO(Integer projectId, String email) {
         this.projectId = projectId;
-        this.userId = userId;
+        this.email = email;
     }
 
     public Integer getProjectId() {
@@ -18,11 +18,11 @@ public class AssignProjectDTO {
         this.projectId = projectId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

@@ -24,7 +24,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDTO login(LoginDTO loginDTO) throws AuthServiceException {
-        Optional<User> optUser = this.userRepository.findByEmailAndPassword(loginDTO.getEmail(),
+        Optional<User> optUser = this.userRepository.findUserByEmailAndPassword(loginDTO.getEmail(),
                 loginDTO.getPassword());
         User user = optUser.orElseThrow(() -> new AuthServiceException("AuthService.USER_NOT_FOUND"));
 

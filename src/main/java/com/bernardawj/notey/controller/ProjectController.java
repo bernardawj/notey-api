@@ -38,10 +38,17 @@ public class ProjectController {
         return new ResponseEntity<>(projectsDTO, HttpStatus.OK);
     }
 
+    @GetMapping(path = "/{projectId}")
+    public ResponseEntity<ProjectDTO> getProject(@PathVariable("projectId") Integer projectId)
+            throws ProjectServiceException {
+        ProjectDTO projectDTO = this.projectService.getProject(projectId);
+        return new ResponseEntity<>(projectDTO, HttpStatus.OK);
+    }
+
     @PostMapping(path = "/assign")
     public ResponseEntity<Void> assignUserToProject(@RequestBody AssignProjectDTO assignProjectDTO)
             throws UserServiceException, ProjectServiceException {
-        this.projectService.assignUserToProject(assignProjectDTO.getProjectId(), assignProjectDTO.getUserId());
+        this.projectService.assignUserToProject(assignProjectDTO.getProjectId(), assignProjectDTO.getEmail());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

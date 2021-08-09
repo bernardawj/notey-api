@@ -29,7 +29,8 @@ public class ProjectServiceImpl implements ProjectService {
     private final String PROJECT_NOT_FOUND = "ProjectService.PROJECT_NOT_FOUND";
 
     @Autowired
-    public ProjectServiceImpl(ProjectRepository projectRepository, UserRepository userRepository, UserService userService) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, UserRepository userRepository,
+                              UserService userService) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.userService = userService;
@@ -68,14 +69,14 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void assignUserToProject(Integer projectId, Integer userId) throws ProjectServiceException,
+    public void assignUserToProject(Integer projectId, String email) throws ProjectServiceException,
             UserServiceException {
         // Check if project exists
         Optional<Project> optProject = this.projectRepository.findById(projectId);
         Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
 
         // Check if user exists
-        Optional<User> optUser = this.userRepository.findById(userId);
+        Optional<User> optUser = this.userRepository.findUserByEmail(email);
         User user = optUser.orElseThrow(() -> new ProjectServiceException("ProjectService.USER_NOT_FOUND"));
 
         // Check if user is the manager
@@ -85,6 +86,15 @@ public class ProjectServiceImpl implements ProjectService {
         // Update project and save to database
         project.getUsers().add(user);
         this.projectRepository.save(project);
+    }
+
+    @Override
+    public ProjectDTO getProject(Integer projectId) throws ProjectServiceException {
+        // Check if project exists
+        Optional<Project> optProject = this.projectRepository.findById(projectId);
+        Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
+
+        return populateProjectDTO(project);
     }
 
     @Override
@@ -123,19 +133,31 @@ public class ProjectServiceImpl implements ProjectService {
         this.projectRepository.deleteById(projectId);
     }
 
+    private ProjectDTO populateProjectDTO(Project project) {
+        // Populate manager DTO
+        UserDTO managerDTO = new UserDTO(project.getManager().getId(), project.getManager().getEmail(), null,
+                project.getManager().getFirstName(), project.getManager().getLastName());
+
+        // Populate project DTO
+        ProjectDTO projectDTO = new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
+                project.getStartAt(), project.getEndAt(), project.getAccessedAt(), managerDTO);
+
+        // Populate assigned users DTO
+        List<UserDTO> usersDTO = new ArrayList<>();
+        project.getUsers().forEach(user -> {
+            usersDTO.add(new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName()));
+        });
+
+        projectDTO.setUsers(usersDTO);
+
+        return projectDTO;
+    }
+
     private List<ProjectDTO> populateProjectsDTO(UserDTO userDTO, Iterable<Project> projects) {
         List<ProjectDTO> projectsDTO = new ArrayList<>();
 
         projects.forEach(project -> {
-            ProjectDTO projectDTO = new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
-                    project.getStartAt(), project.getEndAt(), project.getAccessedAt(), userDTO);
-
-            List<UserDTO> usersDTO = new ArrayList<>();
-            project.getUsers().forEach(user -> {
-                usersDTO.add(new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName()));
-            });
-
-            projectDTO.setUsers(usersDTO);
+            ProjectDTO projectDTO = populateProjectDTO(project);
             projectsDTO.add(projectDTO);
         });
 
