@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service(value = "projectService")
+@Service
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
 
