@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "`user`")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -19,13 +19,17 @@ public class User {
     @JoinColumn(name = "manager_id", unique = true)
     private List<Project> managedProjects;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "project_users",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id")
-    )
-    private List<Project> assignedProjects;
+//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinTable(
+//            name = "project_users",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "project_id")
+//    )
+//    private List<Project> assignedProjects;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", unique = true)
+    private List<ProjectUser> projectUsers;
 
     public User() {
     }
@@ -42,7 +46,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.managedProjects = managedProjects;
-        this.assignedProjects = assignedProjects;
+//        this.assignedProjects = assignedProjects;
     }
 
     public Integer getId() {
@@ -93,11 +97,11 @@ public class User {
         this.managedProjects = managedProjects;
     }
 
-    public List<Project> getAssignedProjects() {
-        return assignedProjects;
-    }
-
-    public void setAssignedProjects(List<Project> assignedProjects) {
-        this.assignedProjects = assignedProjects;
-    }
+//    public List<Project> getAssignedProjects() {
+//        return assignedProjects;
+//    }
+//
+//    public void setAssignedProjects(List<Project> assignedProjects) {
+//        this.assignedProjects = assignedProjects;
+//    }
 }

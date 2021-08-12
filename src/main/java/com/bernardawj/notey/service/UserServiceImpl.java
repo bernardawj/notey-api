@@ -32,10 +32,10 @@ public class UserServiceImpl implements UserService {
 
         // Populate assigned projects
         List<ProjectDTO> assignedProjects = new ArrayList<>();
-        user.getAssignedProjects().forEach(project -> {
-            assignedProjects.add(new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
-                    project.getStartAt(), project.getEndAt(), project.getAccessedAt()));
-        });
+//        user.getAssignedProjects().forEach(project -> {
+//            assignedProjects.add(new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
+//                    project.getStartAt(), project.getEndAt(), project.getAccessedAt()));
+//        });
 
         return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName(),
                 assignedProjects);

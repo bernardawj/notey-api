@@ -2,7 +2,9 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.UserDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
+import com.bernardawj.notey.dto.project.ProjectUserDTO;
 import com.bernardawj.notey.entity.Project;
+import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
@@ -72,8 +74,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void assignUserToProject(Integer projectId, String email) throws ProjectServiceException,
-            UserServiceException {
+    public void assignUserToProject(Integer projectId, String email) throws ProjectServiceException {
         // Check if project exists
         Optional<Project> optProject = this.projectRepository.findById(projectId);
         Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
@@ -87,7 +88,8 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ProjectServiceException(USER_IS_MANAGER);
 
         // Update project and save to database
-        project.getUsers().add(user);
+//        project.getUsers().add(user);
+        project.getProjectUsers().add(new ProjectUser(project.getId(), user.getId(), false, null));
         this.projectRepository.save(project);
     }
 
@@ -101,7 +103,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDTO addProject(ProjectDTO projectDTO) throws UserServiceException, ProjectServiceException {
+    public ProjectDTO addProject(ProjectDTO projectDTO) throws ProjectServiceException {
         // Check if manager exists
         Optional<User> optUser = this.userRepository.findById(projectDTO.getManager().getId());
         User user = optUser.orElseThrow(() -> new ProjectServiceException(USER_NOT_FOUND));
@@ -115,8 +117,7 @@ public class ProjectServiceImpl implements ProjectService {
                 projectDTO.getEndAt(), LocalDateTime.now(ZoneOffset.UTC), user);
         this.projectRepository.save(project);
 
-        return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), project.getStartAt(),
-                project.getEndAt(), project.getAccessedAt(), new UserDTO(project.getManager().getId()));
+        return populateProjectDTO(project);
     }
 
     @Override
@@ -157,15 +158,17 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Populate project DTO
         ProjectDTO projectDTO = new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
-                project.getStartAt(), project.getEndAt(), project.getAccessedAt(), managerDTO);
+                project.getStartAt(), project.getEndAt(), project.getAccessedAt(), managerDTO, null);
 
         // Populate assigned users DTO
-        List<UserDTO> usersDTO = new ArrayList<>();
-        project.getUsers().forEach(user -> {
-            usersDTO.add(new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName()));
+        List<ProjectUserDTO> assignedUsersDTO = new ArrayList<>();
+        project.getProjectUsers().forEach(projectUser -> {
+            assignedUsersDTO.add(new ProjectUserDTO(projectUser.getUser().getId(), projectUser.getUser().getEmail(),
+                    projectUser.getUser().getFirstName(), projectUser.getUser().getLastName(),
+                    projectUser.getHasAccepted()));
         });
 
-        projectDTO.setUsers(usersDTO);
+        projectDTO.setAssignedUsers(assignedUsersDTO);
 
         return projectDTO;
     }
