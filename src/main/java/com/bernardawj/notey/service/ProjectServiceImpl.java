@@ -1,7 +1,7 @@
 package com.bernardawj.notey.service;
 
-import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.UserDTO;
+import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.ProjectServiceException;
@@ -27,6 +27,9 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserService userService;
 
     private final String PROJECT_NOT_FOUND = "ProjectService.PROJECT_NOT_FOUND";
+    private final String INVALID_PROJECT_DATES = "ProjectService.INVALID_PROJECT_DATES";
+    private final String USER_IS_MANAGER = "ProjectService.USER_IS_MANAGER";
+    private final String USER_NOT_FOUND = "ProjectService.USER_NOT_FOUND";
 
     @Autowired
     public ProjectServiceImpl(ProjectRepository projectRepository, UserRepository userRepository,
@@ -77,11 +80,11 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Check if user exists
         Optional<User> optUser = this.userRepository.findUserByEmail(email);
-        User user = optUser.orElseThrow(() -> new ProjectServiceException("ProjectService.USER_NOT_FOUND"));
+        User user = optUser.orElseThrow(() -> new ProjectServiceException(USER_NOT_FOUND));
 
         // Check if user is the manager
         if (project.getManager().getId().intValue() == user.getId().intValue())
-            throw new ProjectServiceException("ProjectService.USER_IS_MANAGER");
+            throw new ProjectServiceException(USER_IS_MANAGER);
 
         // Update project and save to database
         project.getUsers().add(user);
@@ -101,33 +104,47 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectDTO addProject(ProjectDTO projectDTO) throws UserServiceException, ProjectServiceException {
         // Check if manager exists
         Optional<User> optUser = this.userRepository.findById(projectDTO.getManager().getId());
-        User user = optUser.orElseThrow(() -> new ProjectServiceException("ProjectService.USER_NOT_FOUND"));
+        User user = optUser.orElseThrow(() -> new ProjectServiceException(USER_NOT_FOUND));
 
-        // Check if project exists
-        Optional<Project> optProject = this.projectRepository.findProjectByName(projectDTO.getName());
-        if (optProject.isPresent())
-            throw new ProjectServiceException("ProjectService.PROJECT_EXISTS");
-
+        // Validate project dates
+        if (projectDTO.getStartAt().isAfter(projectDTO.getEndAt()))
+            throw new ProjectServiceException(INVALID_PROJECT_DATES);
 
         // Save to database
         Project project = new Project(projectDTO.getName(), projectDTO.getDescription(), projectDTO.getStartAt(),
                 projectDTO.getEndAt(), LocalDateTime.now(ZoneOffset.UTC), user);
         this.projectRepository.save(project);
 
-        return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), projectDTO.getStartAt(),
-                projectDTO.getEndAt(), projectDTO.getAccessedAt(), new UserDTO(project.getManager().getId()));
+        return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), project.getStartAt(),
+                project.getEndAt(), project.getAccessedAt(), new UserDTO(project.getManager().getId()));
     }
 
     @Override
-    public ProjectDTO updateProject(ProjectDTO updateProjectDTO) {
-        return null;
+    public ProjectDTO updateProject(ProjectDTO updateProjectDTO) throws ProjectServiceException {
+        // Check if project exists
+        Optional<Project> optProject = this.projectRepository.findById(updateProjectDTO.getId());
+        Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
+
+        // Validate project dates
+        if (updateProjectDTO.getStartAt().isAfter(updateProjectDTO.getEndAt()))
+            throw new ProjectServiceException(INVALID_PROJECT_DATES);
+
+        // Update project
+        project.setName(updateProjectDTO.getName());
+        project.setDescription(updateProjectDTO.getDescription());
+        project.setStartAt(updateProjectDTO.getStartAt());
+        project.setEndAt(updateProjectDTO.getEndAt());
+        this.projectRepository.save(project);
+
+        return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), project.getStartAt(),
+                project.getEndAt(), project.getAccessedAt());
     }
 
     @Override
     public void deleteProject(Integer projectId, Integer managerId) throws ProjectServiceException {
         // Check if project exists
         Optional<Project> optProject = this.projectRepository.findProjectByProjectIdAndManagerId(projectId, managerId);
-        optProject.orElseThrow(() -> new ProjectServiceException("ProjectService.PROJECT_NOT_FOUND"));
+        optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
 
         // Delete project
         this.projectRepository.deleteById(projectId);

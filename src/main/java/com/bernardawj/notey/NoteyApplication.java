@@ -5,6 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 
+@PropertySources({
+        @PropertySource("classpath:application.properties"),
+        @PropertySource("classpath:message.properties")
+})
 @SpringBootApplication
 public class NoteyApplication {
 

@@ -1,6 +1,7 @@
 package com.bernardawj.notey.utility;
 
 import com.bernardawj.notey.exception.NoteServiceException;
+import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +30,7 @@ public class ExceptionControllerAdvice {
         this.environment = environment;
     }
 
-    @ExceptionHandler({ NoteServiceException.class, UserServiceException.class })
+    @ExceptionHandler({ NoteServiceException.class, ProjectServiceException.class, UserServiceException.class })
     public ResponseEntity<ErrorInfo> serviceExceptionHandler(Exception exception) {
         LOGGER.error(exception.getMessage(), exception);
         HttpStatus status = HttpStatus.BAD_REQUEST;
