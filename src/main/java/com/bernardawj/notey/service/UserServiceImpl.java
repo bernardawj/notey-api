@@ -2,9 +2,12 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.UserDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
+import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.UserServiceException;
+import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.UserRepository;
+import com.bernardawj.notey.utility.ProjectUserCompositeKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +21,12 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final ProjectUserRepository projectUserRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, ProjectUserRepository projectUserRepository) {
         this.userRepository = userRepository;
+        this.projectUserRepository = projectUserRepository;
     }
 
     @Override
@@ -32,12 +37,37 @@ public class UserServiceImpl implements UserService {
 
         // Populate assigned projects
         List<ProjectDTO> assignedProjects = new ArrayList<>();
-//        user.getAssignedProjects().forEach(project -> {
-//            assignedProjects.add(new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
-//                    project.getStartAt(), project.getEndAt(), project.getAccessedAt()));
-//        });
+        user.getProjectUsers().forEach(projectUser -> {
+            UserDTO manager = new UserDTO(projectUser.getProject().getManager().getId(),
+                    projectUser.getProject().getManager().getEmail(), null,
+                    projectUser.getProject().getManager().getFirstName(),
+                    projectUser.getProject().getManager().getLastName());
+            assignedProjects.add(new ProjectDTO(projectUser.getProject().getId(), projectUser.getProject().getName(),
+                    projectUser.getProject().getDescription(), projectUser.getProject().getStartAt(),
+                    projectUser.getProject().getEndAt(), projectUser.getProject().getAccessedAt(), manager));
+        });
 
         return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName(),
                 assignedProjects);
+    }
+
+    @Override
+    public void updateProjectAcceptance(Integer projectId, Integer userId, Boolean accept) throws UserServiceException {
+        // Check if user and project exists within the database
+        ProjectUserCompositeKey compositeKey = new ProjectUserCompositeKey(projectId, userId);
+        Optional<ProjectUser> optProjectUser =
+                this.projectUserRepository.findById(compositeKey);
+        ProjectUser projectUser = optProjectUser.orElseThrow(() -> new UserServiceException("UserService" +
+                ".NO_PROJECT_FOR_ACCEPTANCE"));
+
+        // Delete project user if declined
+        if (!accept) {
+            this.projectUserRepository.deleteById(compositeKey);
+            return;
+        }
+
+        // Perform acceptance on project and update the database
+        projectUser.setHasAccepted(true);
+        this.projectUserRepository.save(projectUser);
     }
 }

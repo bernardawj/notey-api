@@ -136,8 +136,10 @@ public class ProjectServiceImpl implements ProjectService {
         project.setEndAt(updateProjectDTO.getEndAt());
         this.projectRepository.save(project);
 
+        UserDTO manager = new UserDTO(project.getManager().getId(), project.getManager().getEmail(), null,
+                project.getManager().getFirstName(), project.getManager().getLastName());
         return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), project.getStartAt(),
-                project.getEndAt(), project.getAccessedAt());
+                project.getEndAt(), project.getAccessedAt(), manager);
     }
 
     @Override

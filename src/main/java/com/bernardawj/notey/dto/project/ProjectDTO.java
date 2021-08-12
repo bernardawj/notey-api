@@ -4,6 +4,7 @@ import com.bernardawj.notey.dto.UserDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectDTO {
@@ -22,13 +23,8 @@ public class ProjectDTO {
     }
 
     public ProjectDTO(Integer id, String name, String description, LocalDate startAt, LocalDate endAt,
-                      LocalDateTime accessedAt) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.startAt = startAt;
-        this.endAt = endAt;
-        this.accessedAt = accessedAt;
+                      LocalDateTime accessedAt, UserDTO manager) {
+        this(id, name, description, startAt, endAt, accessedAt, manager, null);
     }
 
     public ProjectDTO(Integer id, String name, String description, LocalDate startAt, LocalDate endAt,

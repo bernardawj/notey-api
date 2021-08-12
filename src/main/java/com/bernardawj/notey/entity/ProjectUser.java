@@ -27,11 +27,11 @@ public class ProjectUser {
     })
     private List<Task> tasks;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", unique = true, insertable = false, updatable = false)
     private Project project;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true, insertable = false, updatable = false)
     private User user;
 

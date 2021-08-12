@@ -1,6 +1,7 @@
 package com.bernardawj.notey.controller;
 
 import com.bernardawj.notey.dto.UserDTO;
+import com.bernardawj.notey.dto.user.ProjectAcceptanceDTO;
 import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,5 +25,12 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserDetails(@PathVariable("id") Integer id) throws UserServiceException {
         UserDTO userDTO = this.userService.getUserDetails(id);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/project/acceptance")
+    public ResponseEntity<Void> updateProjectAcceptance(@RequestBody ProjectAcceptanceDTO projectAcceptanceDTO) throws UserServiceException {
+        this.userService.updateProjectAcceptance(projectAcceptanceDTO.getProjectId(),
+                projectAcceptanceDTO.getUserId(), projectAcceptanceDTO.getAccept());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
