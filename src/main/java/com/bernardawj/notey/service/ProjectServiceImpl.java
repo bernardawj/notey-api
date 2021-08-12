@@ -88,7 +88,6 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ProjectServiceException(USER_IS_MANAGER);
 
         // Update project and save to database
-//        project.getUsers().add(user);
         project.getProjectUsers().add(new ProjectUser(project.getId(), user.getId(), false, null));
         this.projectRepository.save(project);
     }

@@ -22,13 +22,8 @@ public class Task {
     private LocalDateTime createdAt;
     private LocalDateTime endedAt;
 
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "project_id", unique = true)
-//    private Project project;
-//
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "user_id", unique = true)
-//    private User user;
+    public Task() {
+    }
 
     public Task(Integer id, String name, String description, TaskType type, Boolean isCompleted,
                 LocalDateTime createdAt, LocalDateTime endedAt) {

@@ -1,6 +1,7 @@
 package com.bernardawj.notey.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,14 +20,6 @@ public class User {
     @JoinColumn(name = "manager_id", unique = true)
     private List<Project> managedProjects;
 
-//    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinTable(
-//            name = "project_users",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "project_id")
-//    )
-//    private List<Project> assignedProjects;
-
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", unique = true)
     private List<ProjectUser> projectUsers;
@@ -39,14 +32,19 @@ public class User {
     }
 
     public User(Integer id, String email, String password, String firstName, String lastName,
-                List<Project> managedProjects, List<Project> assignedProjects) {
+                List<Project> managedProjects) {
+        this(id, email, password, firstName, lastName, managedProjects, new ArrayList<>());
+    }
+
+    public User(Integer id, String email, String password, String firstName, String lastName,
+                List<Project> managedProjects, List<ProjectUser> projectUsers) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.managedProjects = managedProjects;
-//        this.assignedProjects = assignedProjects;
+        this.projectUsers = projectUsers;
     }
 
     public Integer getId() {
@@ -97,11 +95,11 @@ public class User {
         this.managedProjects = managedProjects;
     }
 
-//    public List<Project> getAssignedProjects() {
-//        return assignedProjects;
-//    }
-//
-//    public void setAssignedProjects(List<Project> assignedProjects) {
-//        this.assignedProjects = assignedProjects;
-//    }
+    public List<ProjectUser> getProjectUsers() {
+        return projectUsers;
+    }
+
+    public void setProjectUsers(List<ProjectUser> projectUsers) {
+        this.projectUsers = projectUsers;
+    }
 }
