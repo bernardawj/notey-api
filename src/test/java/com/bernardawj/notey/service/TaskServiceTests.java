@@ -1,5 +1,6 @@
 package com.bernardawj.notey.service;
 
+import com.bernardawj.notey.dto.task.AssignTaskDTO;
 import com.bernardawj.notey.dto.task.CreateTaskDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
@@ -71,5 +72,108 @@ public class TaskServiceTests {
 
         // Check if exception message thrown is the same
         Assertions.assertEquals("TaskService.TASK_EXISTS", ex.getMessage());
+    }
+
+    @Test
+    public void invalidTaskIdOnAssignUserToTaskShouldThrowException() {
+        // Mock DTO
+        AssignTaskDTO assignTaskDTO = new AssignTaskDTO();
+        assignTaskDTO.setTaskId(1);
+        assignTaskDTO.setUserId(1);
+        assignTaskDTO.setManagerId(2);
+        assignTaskDTO.setAssign(true);
+
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.assignTaskToUser(assignTaskDTO));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.TASK_NOT_FOUND", ex.getMessage());
+    }
+
+    @Test
+    public void invalidProjectIdAndUserIdOnAssignUserToTaskShouldThrowException() {
+        // Mock DTO
+        AssignTaskDTO assignTaskDTO = new AssignTaskDTO();
+        assignTaskDTO.setTaskId(1);
+        assignTaskDTO.setUserId(1);
+        assignTaskDTO.setManagerId(2);
+        assignTaskDTO.setAssign(true);
+
+        // Mock task
+        Task task = new Task();
+        task.setProject(new Project());
+        task.getProject().setId(1);
+
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(task));
+        Mockito.when(this.projectUserRepository.findByProjectIdAndUserId(Mockito.anyInt(), Mockito.anyInt())).thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.assignTaskToUser(assignTaskDTO));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.USER_NOT_PART_OF_PROJECT", ex.getMessage());
+    }
+
+    @Test
+    public void invalidManagerIdOnAssignUserToTaskShouldThrowException() {
+        // Mock DTO
+        AssignTaskDTO assignTaskDTO = new AssignTaskDTO();
+        assignTaskDTO.setTaskId(1);
+        assignTaskDTO.setUserId(1);
+        assignTaskDTO.setManagerId(2);
+        assignTaskDTO.setAssign(true);
+
+        // Mock entity
+        Task task = new Task();
+        task.setProject(new Project());
+        task.getProject().setId(1);
+        task.getProject().setManager(new User());
+        task.getProject().getManager().setId(45);
+
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(task));
+        Mockito.when(this.projectUserRepository.findByProjectIdAndUserId(Mockito.anyInt(), Mockito.anyInt())).thenReturn(Optional.of(new ProjectUser()));
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.assignTaskToUser(assignTaskDTO));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.NOT_MATCHING_MANAGER", ex.getMessage());
+    }
+
+    @Test
+    public void invalidUnAssignOnAssignUserToTaskShouldThrowException() {
+        // Mock DTO
+        AssignTaskDTO assignTaskDTO = new AssignTaskDTO();
+        assignTaskDTO.setTaskId(1);
+        assignTaskDTO.setUserId(1);
+        assignTaskDTO.setManagerId(45);
+        assignTaskDTO.setAssign(false);
+
+        // Mock entity
+        Task task = new Task();
+        task.setProject(new Project());
+        task.getProject().setId(1);
+        task.getProject().setManager(new User());
+        task.getProject().getManager().setId(45);
+        task.setUser(null);
+
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(task));
+        Mockito.when(this.projectUserRepository.findByProjectIdAndUserId(Mockito.anyInt(), Mockito.anyInt())).thenReturn(Optional.of(new ProjectUser()));
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.assignTaskToUser(assignTaskDTO));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.INVALID_UNASSIGNMENT", ex.getMessage());
     }
 }

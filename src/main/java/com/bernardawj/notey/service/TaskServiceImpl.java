@@ -2,9 +2,11 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.UserDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
+import com.bernardawj.notey.dto.task.AssignTaskDTO;
 import com.bernardawj.notey.dto.task.CreateTaskDTO;
 import com.bernardawj.notey.dto.task.TaskDTO;
 import com.bernardawj.notey.entity.Project;
+import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
 import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
@@ -33,6 +35,7 @@ public class TaskServiceImpl implements TaskService {
     private final String USER_NOT_FOUND = "TaskService.USER_NOT_FOUND";
     private final String USER_NOT_PART_OF_PROJECT = "TaskService.USER_NOT_PART_OF_PROJECT";
     private final String NOT_MATCHING_MANAGER = "TaskService.NOT_MATCHING_MANAGER";
+    private final String INVALID_UNASSIGNMENT = "TaskService.INVALID_UNASSIGNMENT";
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository,
@@ -72,7 +75,34 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void assignTaskToUser(Integer taskId, Integer userId, Integer managerId, Boolean assign) throws TaskServiceException {
+    public void assignTaskToUser(AssignTaskDTO assignTaskDTO) throws TaskServiceException {
+        // Check if task exists within the database
+        Optional<Task> optTask = this.taskRepository.findById(assignTaskDTO.getTaskId());
+        Task task = optTask.orElseThrow(() -> new TaskServiceException(TASK_NOT_FOUND));
+
+        // Check if user is part of the project
+        Optional<ProjectUser> optProjectUser =
+                this.projectUserRepository.findByProjectIdAndUserId(task.getProject().getId(),
+                        assignTaskDTO.getUserId());
+        ProjectUser projectUser = optProjectUser.orElseThrow(() -> new TaskServiceException(USER_NOT_PART_OF_PROJECT));
+
+        // Check if project manager is correct
+        if (task.getProject().getManager().getId().intValue() != assignTaskDTO.getManagerId())
+            throw new TaskServiceException(NOT_MATCHING_MANAGER);
+
+        // Update user assignment on the task
+        if (assignTaskDTO.getAssign()) {
+            task.setUser(projectUser.getUser());
+        } else {
+            // Check if there are any user assignment before un-assigning
+            if (task.getUser() == null)
+                throw new TaskServiceException(INVALID_UNASSIGNMENT);
+
+            task.setUser(null);
+        }
+
+        // Save to database
+        this.taskRepository.save(task);
     }
 
     @Override
