@@ -42,11 +42,13 @@ CREATE TABLE tasks
     description  TEXT      NOT NULL,
     type         TEXT      NOT NULL,
     is_completed BOOLEAN   NOT NULL,
+    start_at     TIMESTAMP NOT NULL,
+    end_at       TIMESTAMP NOT NULL,
     created_at   TIMESTAMP NOT NULL,
-    ended_at     TIMESTAMP NOT NULL,
     project_id   INTEGER   NOT NULL,
-    user_id      INTEGER   NOT NULL,
-    CONSTRAINT fk_project_id_user_id FOREIGN KEY (project_id, user_id) REFERENCES project_users (project_id, user_id)
+    user_id      INTEGER   NULL,
+    CONSTRAINT fk_project_id FOREIGN KEY (project_id) REFERENCES projects (id),
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TABLE notes

@@ -1,46 +1,28 @@
-package com.bernardawj.notey.entity;
+package com.bernardawj.notey.dto.task;
 
 import com.bernardawj.notey.enums.TaskType;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "tasks")
-public class Task {
+public class CreateTaskDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private String description;
-
-    @Enumerated(EnumType.STRING)
     private TaskType type;
-
     private Boolean isCompleted;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private LocalDateTime createdAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", unique = true)
-    private Project project;
+    private Integer projectId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
-    private User user;
-
-    public Task() {
+    public CreateTaskDTO() {
     }
 
-    public Task(String name, String description, TaskType type, Boolean isCompleted, LocalDateTime startAt,
-                LocalDateTime endAt, LocalDateTime createdAt, Project project) {
-        this(name, description, type, isCompleted, startAt, endAt, createdAt, project, null);
-    }
-
-    public Task(String name, String description, TaskType type, Boolean isCompleted, LocalDateTime startAt,
-                LocalDateTime endAt, LocalDateTime createdAt, Project project, User user) {
+    public CreateTaskDTO(Integer id, String name, String description, TaskType type, Boolean isCompleted,
+                         LocalDateTime startAt, LocalDateTime endAt, LocalDateTime createdAt, Integer projectId) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.type = type;
@@ -48,8 +30,7 @@ public class Task {
         this.startAt = startAt;
         this.endAt = endAt;
         this.createdAt = createdAt;
-        this.project = project;
-        this.user = user;
+        this.projectId = projectId;
     }
 
     public Integer getId() {
@@ -116,19 +97,11 @@ public class Task {
         this.createdAt = createdAt;
     }
 
-    public Project getProject() {
-        return project;
+    public Integer getProjectId() {
+        return projectId;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public void setProjectId(Integer projectId) {
+        this.projectId = projectId;
     }
 }

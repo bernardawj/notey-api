@@ -1,46 +1,36 @@
-package com.bernardawj.notey.entity;
+package com.bernardawj.notey.dto.task;
 
+import com.bernardawj.notey.dto.UserDTO;
+import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.enums.TaskType;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "tasks")
-public class Task {
+public class TaskDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private String description;
-
-    @Enumerated(EnumType.STRING)
     private TaskType type;
-
     private Boolean isCompleted;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private LocalDateTime createdAt;
+    private ProjectDTO project;
+    private UserDTO user;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", unique = true)
-    private Project project;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
-    private User user;
-
-    public Task() {
+    public TaskDTO() {
     }
 
-    public Task(String name, String description, TaskType type, Boolean isCompleted, LocalDateTime startAt,
-                LocalDateTime endAt, LocalDateTime createdAt, Project project) {
-        this(name, description, type, isCompleted, startAt, endAt, createdAt, project, null);
+    public TaskDTO(Integer id, String name, String description, TaskType type, Boolean isCompleted,
+                   LocalDateTime startAt, LocalDateTime endAt, LocalDateTime createdAt) {
+        this(id, name, description, type, isCompleted, startAt, endAt, createdAt, null, null);
     }
 
-    public Task(String name, String description, TaskType type, Boolean isCompleted, LocalDateTime startAt,
-                LocalDateTime endAt, LocalDateTime createdAt, Project project, User user) {
+    public TaskDTO(Integer id, String name, String description, TaskType type, Boolean isCompleted,
+                   LocalDateTime startAt, LocalDateTime endAt, LocalDateTime createdAt, ProjectDTO project,
+                   UserDTO user) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.type = type;
@@ -116,19 +106,19 @@ public class Task {
         this.createdAt = createdAt;
     }
 
-    public Project getProject() {
+    public ProjectDTO getProject() {
         return project;
     }
 
-    public void setProject(Project project) {
+    public void setProject(ProjectDTO project) {
         this.project = project;
     }
 
-    public User getUser() {
+    public UserDTO getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDTO user) {
         this.user = user;
     }
 }

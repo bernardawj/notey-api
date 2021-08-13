@@ -24,6 +24,10 @@ public class User {
     @JoinColumn(name = "user_id", unique = true)
     private List<ProjectUser> projectUsers;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", unique = true)
+    private List<Task> tasks;
+
     public User() {
     }
 
@@ -33,11 +37,11 @@ public class User {
 
     public User(Integer id, String email, String password, String firstName, String lastName,
                 List<Project> managedProjects) {
-        this(id, email, password, firstName, lastName, managedProjects, new ArrayList<>());
+        this(id, email, password, firstName, lastName, managedProjects, new ArrayList<>(), new ArrayList<>());
     }
 
     public User(Integer id, String email, String password, String firstName, String lastName,
-                List<Project> managedProjects, List<ProjectUser> projectUsers) {
+                List<Project> managedProjects, List<ProjectUser> projectUsers, List<Task> tasks) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -45,6 +49,7 @@ public class User {
         this.lastName = lastName;
         this.managedProjects = managedProjects;
         this.projectUsers = projectUsers;
+        this.tasks = tasks;
     }
 
     public Integer getId() {
@@ -101,5 +106,13 @@ public class User {
 
     public void setProjectUsers(List<ProjectUser> projectUsers) {
         this.projectUsers = projectUsers;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 }

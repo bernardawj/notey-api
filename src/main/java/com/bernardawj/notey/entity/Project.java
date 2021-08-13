@@ -1,6 +1,5 @@
 package com.bernardawj.notey.entity;
 
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,16 +27,20 @@ public class Project {
     @JoinColumn(name = "project_id", unique = true)
     private List<ProjectUser> projectUsers;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_id")
+    private List<Task> tasks;
+
     public Project() {
     }
 
     public Project(String name, String description, LocalDate startAt, LocalDate endAt,
                    LocalDateTime accessedAt, User manager) {
-        this(name, description, startAt, endAt, accessedAt, manager, new ArrayList<>());
+        this(name, description, startAt, endAt, accessedAt, manager, new ArrayList<>(), new ArrayList<>());
     }
 
     public Project(String name, String description, LocalDate startAt, LocalDate endAt,
-                   LocalDateTime accessedAt, User manager, List<ProjectUser> projectUsers) {
+                   LocalDateTime accessedAt, User manager, List<ProjectUser> projectUsers, List<Task> tasks) {
         this.name = name;
         this.description = description;
         this.startAt = startAt;
@@ -45,6 +48,7 @@ public class Project {
         this.accessedAt = accessedAt;
         this.manager = manager;
         this.projectUsers = projectUsers;
+        this.tasks = tasks;
     }
 
     public Integer getId() {
@@ -109,5 +113,13 @@ public class Project {
 
     public void setProjectUsers(List<ProjectUser> projectUsers) {
         this.projectUsers = projectUsers;
+    }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 }

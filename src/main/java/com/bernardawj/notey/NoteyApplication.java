@@ -15,5 +15,4 @@ public class NoteyApplication {
     public static void main(String[] args) {
         SpringApplication.run(NoteyApplication.class, args);
     }
-
 }
