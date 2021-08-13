@@ -2,6 +2,7 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.task.AssignTaskDTO;
 import com.bernardawj.notey.dto.task.CreateTaskDTO;
+import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
 import com.bernardawj.notey.dto.task.TaskDTO;
 import com.bernardawj.notey.exception.TaskServiceException;
 
@@ -11,7 +12,7 @@ public interface TaskService {
 
     void assignTaskToUser(AssignTaskDTO assignTaskDTO) throws TaskServiceException;
 
-    void markTaskAsCompleted(Integer taskId, Integer userId, Boolean complete) throws TaskServiceException;
+    void markTaskAsCompleted(MarkTaskCompletionDTO markTaskCompletionDTO) throws TaskServiceException;
 
     TaskDTO getTask(Integer taskId, Integer userId) throws TaskServiceException;
 

@@ -2,6 +2,7 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.task.AssignTaskDTO;
 import com.bernardawj.notey.dto.task.CreateTaskDTO;
+import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
@@ -175,5 +176,18 @@ public class TaskServiceTests {
 
         // Check if exception message thrown is the same
         Assertions.assertEquals("TaskService.INVALID_UNASSIGNMENT", ex.getMessage());
+    }
+
+    @Test
+    public void invalidTaskIdOnMarkTaskAsCompletedShouldThrowException() {
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.markTaskAsCompleted(new MarkTaskCompletionDTO()));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.TASK_NOT_FOUND", ex.getMessage());
     }
 }

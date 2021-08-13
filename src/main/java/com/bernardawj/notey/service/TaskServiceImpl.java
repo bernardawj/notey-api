@@ -4,10 +4,12 @@ import com.bernardawj.notey.dto.UserDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.task.AssignTaskDTO;
 import com.bernardawj.notey.dto.task.CreateTaskDTO;
+import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
 import com.bernardawj.notey.dto.task.TaskDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
+import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.ProjectUserRepository;
@@ -106,7 +108,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void markTaskAsCompleted(Integer taskId, Integer userId, Boolean complete) throws TaskServiceException {
+    public void markTaskAsCompleted(MarkTaskCompletionDTO markTaskCompletionDTO) throws TaskServiceException {
+        // Check if task exists within the database
+        Optional<Task> optTask = this.taskRepository.findByTaskIdAndUserId(markTaskCompletionDTO.getTaskId(),
+                markTaskCompletionDTO.getUserId());
+        Task task = optTask.orElseThrow(() -> new TaskServiceException(TASK_NOT_FOUND));
+
+        // Update task completion and save to database
+        task.setCompleted(markTaskCompletionDTO.getComplete());
+        this.taskRepository.save(task);
     }
 
     @Override
