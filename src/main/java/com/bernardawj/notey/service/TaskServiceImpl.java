@@ -2,7 +2,10 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.UserDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
-import com.bernardawj.notey.dto.task.*;
+import com.bernardawj.notey.dto.task.AssignTaskDTO;
+import com.bernardawj.notey.dto.task.CreateTaskDTO;
+import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
+import com.bernardawj.notey.dto.task.TaskDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
@@ -17,6 +20,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service(value = "taskService")
@@ -130,6 +135,29 @@ public class TaskServiceImpl implements TaskService {
         // Return DTO
         return new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(), task.getCompleted(),
                 task.getStartAt(), task.getEndAt(), task.getCreatedAt());
+    }
+
+    @Override
+    public List<TaskDTO> getAllUserTasks(Integer userId) throws TaskServiceException {
+        // Get all tasks related to user from database
+        Iterable<Task> tasks = this.taskRepository.findAllByUserId(userId);
+
+        // Populate it into DTO
+        List<TaskDTO> tasksDTO = new ArrayList<>();
+        tasks.forEach(task -> {
+            Project project = task.getProject();
+
+            ProjectDTO projectDTO = new ProjectDTO();
+            projectDTO.setId(project.getId());
+            projectDTO.setName(project.getName());
+            projectDTO.setDescription(project.getDescription());
+
+            TaskDTO taskDTO = new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(),
+                    task.getCompleted(), task.getStartAt(), task.getEndAt(), task.getCreatedAt(), projectDTO);
+            tasksDTO.add(taskDTO);
+        });
+
+        return tasksDTO;
     }
 
     @Override

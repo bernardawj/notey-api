@@ -28,6 +28,11 @@ public class TaskDTO {
     }
 
     public TaskDTO(Integer id, String name, String description, TaskType type, Boolean isCompleted,
+                   LocalDateTime startAt, LocalDateTime endAt, LocalDateTime createdAt, ProjectDTO project) {
+        this(id, name, description, type, isCompleted, startAt, endAt, createdAt, project, null);
+    }
+
+    public TaskDTO(Integer id, String name, String description, TaskType type, Boolean isCompleted,
                    LocalDateTime startAt, LocalDateTime endAt, LocalDateTime createdAt, ProjectDTO project,
                    UserDTO user) {
         this.id = id;

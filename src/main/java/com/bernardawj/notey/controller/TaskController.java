@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/api/v1/task")
 public class TaskController {
@@ -45,5 +47,11 @@ public class TaskController {
                                            @PathVariable("userId") Integer userId) throws TaskServiceException {
         TaskDTO taskDTO = this.taskService.getTask(taskId, userId);
         return new ResponseEntity<>(taskDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/user/{userId}")
+    public ResponseEntity<List<TaskDTO>> getAllUserTasks(@PathVariable("userId") Integer userId) throws TaskServiceException {
+        List<TaskDTO> tasksDTO = this.taskService.getAllUserTasks(userId);
+        return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
     }
 }
