@@ -1,9 +1,6 @@
 package com.bernardawj.notey.service;
 
-import com.bernardawj.notey.dto.task.AssignTaskDTO;
-import com.bernardawj.notey.dto.task.CreateTaskDTO;
-import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
-import com.bernardawj.notey.dto.task.TaskDTO;
+import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.exception.TaskServiceException;
 
 public interface TaskService {

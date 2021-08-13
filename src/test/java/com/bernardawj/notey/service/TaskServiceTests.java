@@ -19,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -189,5 +191,48 @@ public class TaskServiceTests {
 
         // Check if exception message thrown is the same
         Assertions.assertEquals("TaskService.TASK_NOT_FOUND", ex.getMessage());
+    }
+
+    @Test
+    public void invalidTaskIdOnGetTaskShouldThrow() {
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.getTask(1, 1));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.TASK_NOT_FOUND", ex.getMessage());
+    }
+
+    @Test
+    public void invalidUserNotInProjectOnGetTaskShouldThrow() {
+        // Mock entity
+        ProjectUser projectUser1 = new ProjectUser();
+        projectUser1.setUserId(2);
+
+        ProjectUser projectUser2 = new ProjectUser();
+        projectUser2.setUserId(3);
+
+        List<ProjectUser> projectUsers = new ArrayList<>();
+        projectUsers.add(projectUser1);
+        projectUsers.add(projectUser2);
+
+        Project project = new Project();
+        project.setProjectUsers(projectUsers);
+
+        Task task = new Task();
+        task.setProject(project);
+
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(task));
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.getTask(1, 1));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.USER_NOT_PART_OF_PROJECT", ex.getMessage());
     }
 }

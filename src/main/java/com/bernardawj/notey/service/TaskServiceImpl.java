@@ -2,14 +2,10 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.UserDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
-import com.bernardawj.notey.dto.task.AssignTaskDTO;
-import com.bernardawj.notey.dto.task.CreateTaskDTO;
-import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
-import com.bernardawj.notey.dto.task.TaskDTO;
+import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
-import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.ProjectUserRepository;
@@ -121,7 +117,19 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDTO getTask(Integer taskId, Integer userId) throws TaskServiceException {
-        return null;
+        // Check if task exists within the database
+        Optional<Task> optTask = this.taskRepository.findById(taskId);
+        Task task = optTask.orElseThrow(() -> new TaskServiceException(TASK_NOT_FOUND));
+
+        // Check if user belongs to the project
+        boolean isProjectUser = task.getProject().getProjectUsers().stream().anyMatch(projectUser ->
+                projectUser.getUserId().intValue() == userId.intValue());
+        if (!isProjectUser)
+            throw new TaskServiceException(USER_NOT_PART_OF_PROJECT);
+
+        // Return DTO
+        return new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(), task.getCompleted(),
+                task.getStartAt(), task.getEndAt(), task.getCreatedAt());
     }
 
     @Override
