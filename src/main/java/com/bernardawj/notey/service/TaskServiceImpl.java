@@ -2,10 +2,7 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.UserDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
-import com.bernardawj.notey.dto.task.AssignTaskDTO;
-import com.bernardawj.notey.dto.task.CreateTaskDTO;
-import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
-import com.bernardawj.notey.dto.task.TaskDTO;
+import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
@@ -161,8 +158,27 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDTO updateTask(Integer taskId, Integer managerId) throws TaskServiceException {
-        return null;
+    public TaskDTO updateTask(UpdateTaskDTO updateTaskDTO) throws TaskServiceException {
+        // Check if task exists in the database
+        Optional<Task> optTask = this.taskRepository.findById(updateTaskDTO.getTaskId());
+        Task task = optTask.orElseThrow(() -> new TaskServiceException(TASK_NOT_FOUND));
+
+        // Check if task is being updated by project manager
+        if (task.getProject().getManager().getId().intValue() != updateTaskDTO.getManagerId().intValue())
+            throw new TaskServiceException(NOT_MATCHING_MANAGER);
+
+        // Update task and save it into database
+        task.setName(updateTaskDTO.getName());
+        task.setDescription(updateTaskDTO.getDescription());
+        task.setType(updateTaskDTO.getType());
+        task.setCompleted(updateTaskDTO.getCompleted());
+        task.setStartAt(updateTaskDTO.getStartAt());
+        task.setEndAt(updateTaskDTO.getEndAt());
+        this.taskRepository.save(task);
+
+        // Return DTO
+        return new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(), task.getCompleted(),
+                task.getStartAt(), task.getEndAt(), task.getCreatedAt());
     }
 
     @Override

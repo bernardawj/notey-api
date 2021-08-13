@@ -1,9 +1,6 @@
 package com.bernardawj.notey.controller;
 
-import com.bernardawj.notey.dto.task.AssignTaskDTO;
-import com.bernardawj.notey.dto.task.CreateTaskDTO;
-import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
-import com.bernardawj.notey.dto.task.TaskDTO;
+import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +50,11 @@ public class TaskController {
     public ResponseEntity<List<TaskDTO>> getAllUserTasks(@PathVariable("userId") Integer userId) throws TaskServiceException {
         List<TaskDTO> tasksDTO = this.taskService.getAllUserTasks(userId);
         return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
+    }
+
+    @PutMapping()
+    public ResponseEntity<TaskDTO> updateTask(@RequestBody UpdateTaskDTO updateTaskDTO) throws TaskServiceException {
+        TaskDTO taskDTO = this.taskService.updateTask(updateTaskDTO);
+        return new ResponseEntity<>(taskDTO, HttpStatus.OK);
     }
 }

@@ -3,6 +3,7 @@ package com.bernardawj.notey.service;
 import com.bernardawj.notey.dto.task.AssignTaskDTO;
 import com.bernardawj.notey.dto.task.CreateTaskDTO;
 import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
+import com.bernardawj.notey.dto.task.UpdateTaskDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
@@ -60,13 +61,17 @@ public class TaskServiceTests {
 
     @Test
     public void invalidTaskNameExistsInProjectOnCreateTaskShouldThrowException() {
+        // Mock entity
+        Project project = new Project();
+        project.setId(1);
+
         // Mock DTO
         CreateTaskDTO createTaskDTO = new CreateTaskDTO();
         createTaskDTO.setName("Dummy task");
         createTaskDTO.setProjectId(1);
 
         // Mock behaviors of repository
-        Mockito.when(this.projectRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(new Project()));
+        Mockito.when(this.projectRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(project));
         Mockito.when(this.taskRepository.findByProjectIdAndTaskName(Mockito.anyInt(), Mockito.anyString())).thenReturn(Optional.of(new Task()));
 
         // Check if method indeed throws an exception
@@ -194,7 +199,7 @@ public class TaskServiceTests {
     }
 
     @Test
-    public void invalidTaskIdOnGetTaskShouldThrow() {
+    public void invalidTaskIdOnGetTaskShouldThrowException() {
         // Mock behaviors of repository
         Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
 
@@ -207,7 +212,7 @@ public class TaskServiceTests {
     }
 
     @Test
-    public void invalidUserNotInProjectOnGetTaskShouldThrow() {
+    public void invalidUserNotInProjectOnGetTaskShouldThrowException() {
         // Mock entity
         ProjectUser projectUser1 = new ProjectUser();
         projectUser1.setUserId(2);
@@ -234,5 +239,44 @@ public class TaskServiceTests {
 
         // Check if exception message thrown is the same
         Assertions.assertEquals("TaskService.USER_NOT_PART_OF_PROJECT", ex.getMessage());
+    }
+
+    @Test
+    public void invalidTaskIdOnUpdateTaskShouldThrowException() {
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.updateTask(new UpdateTaskDTO()));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.TASK_NOT_FOUND", ex.getMessage());
+    }
+
+    @Test
+    public void invalidManagerIdOnUpdateTaskShouldThrowException() {
+        // Mock entity
+        Project project = new Project();
+        project.setManager(new User());
+        project.getManager().setId(1);
+
+        Task task = new Task();
+        task.setProject(project);
+
+        // Mock DTO
+        UpdateTaskDTO updateTaskDTO = new UpdateTaskDTO();
+        updateTaskDTO.setTaskId(1);
+        updateTaskDTO.setManagerId(2);
+
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(task));
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.updateTask(updateTaskDTO));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.NOT_MATCHING_MANAGER", ex.getMessage());
     }
 }
