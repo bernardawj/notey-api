@@ -1,6 +1,6 @@
 package com.bernardawj.notey.controller;
 
-import com.bernardawj.notey.dto.NoteDTO;
+import com.bernardawj.notey.dto.note.NoteDTO;
 import com.bernardawj.notey.exception.NoteServiceException;
 import com.bernardawj.notey.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;

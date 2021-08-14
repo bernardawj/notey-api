@@ -1,4 +1,4 @@
-package com.bernardawj.notey.dto;
+package com.bernardawj.notey.dto.auth;
 
 public class LoginDTO {
 

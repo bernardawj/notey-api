@@ -1,6 +1,6 @@
 package com.bernardawj.notey.service;
 
-import com.bernardawj.notey.dto.NoteDTO;
+import com.bernardawj.notey.dto.note.NoteDTO;
 import com.bernardawj.notey.exception.NoteServiceException;
 
 import java.util.List;

@@ -1,10 +1,9 @@
 package com.bernardawj.notey.dto.project;
 
-import com.bernardawj.notey.dto.UserDTO;
+import com.bernardawj.notey.dto.user.UserDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectDTO {
