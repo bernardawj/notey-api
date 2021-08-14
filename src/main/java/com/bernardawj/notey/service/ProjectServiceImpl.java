@@ -1,8 +1,7 @@
 package com.bernardawj.notey.service;
 
+import com.bernardawj.notey.dto.project.*;
 import com.bernardawj.notey.dto.user.UserDTO;
-import com.bernardawj.notey.dto.project.ProjectDTO;
-import com.bernardawj.notey.dto.project.ProjectUserDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.User;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service
+@Service(value = "projectService")
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
 
@@ -102,27 +101,29 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDTO addProject(ProjectDTO projectDTO) throws ProjectServiceException {
+    public ProjectDTO createProject(CreateProjectDTO createProjectDTO) throws ProjectServiceException {
         // Check if manager exists
-        Optional<User> optUser = this.userRepository.findById(projectDTO.getManager().getId());
+        Optional<User> optUser = this.userRepository.findById(createProjectDTO.getManagerId());
         User user = optUser.orElseThrow(() -> new ProjectServiceException(USER_NOT_FOUND));
 
         // Validate project dates
-        if (projectDTO.getStartAt().isAfter(projectDTO.getEndAt()))
+        if (createProjectDTO.getStartAt().isAfter(createProjectDTO.getEndAt()))
             throw new ProjectServiceException(INVALID_PROJECT_DATES);
 
         // Save to database
-        Project project = new Project(projectDTO.getName(), projectDTO.getDescription(), projectDTO.getStartAt(),
-                projectDTO.getEndAt(), LocalDateTime.now(ZoneOffset.UTC), user);
+        Project project = new Project(createProjectDTO.getName(), createProjectDTO.getDescription(),
+                createProjectDTO.getStartAt(), createProjectDTO.getEndAt(), LocalDateTime.now(ZoneOffset.UTC), user);
         this.projectRepository.save(project);
 
         return populateProjectDTO(project);
     }
 
     @Override
-    public ProjectDTO updateProject(ProjectDTO updateProjectDTO) throws ProjectServiceException {
+    public ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO) throws ProjectServiceException {
         // Check if project exists
-        Optional<Project> optProject = this.projectRepository.findById(updateProjectDTO.getId());
+        Optional<Project> optProject =
+                this.projectRepository.findProjectByProjectIdAndManagerId(updateProjectDTO.getId(),
+                        updateProjectDTO.getManagerId());
         Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
 
         // Validate project dates
@@ -143,13 +144,15 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void deleteProject(Integer projectId, Integer managerId) throws ProjectServiceException {
+    public void deleteProject(DeleteProjectDTO deleteProjectDTO) throws ProjectServiceException {
         // Check if project exists
-        Optional<Project> optProject = this.projectRepository.findProjectByProjectIdAndManagerId(projectId, managerId);
-        optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
+        Optional<Project> optProject =
+                this.projectRepository.findProjectByProjectIdAndManagerId(deleteProjectDTO.getProjectId(),
+                        deleteProjectDTO.getManagerId());
+        Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
 
         // Delete project
-        this.projectRepository.deleteById(projectId);
+        this.projectRepository.deleteById(project.getId());
     }
 
     private ProjectDTO populateProjectDTO(Project project) {

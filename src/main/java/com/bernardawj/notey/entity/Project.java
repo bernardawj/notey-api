@@ -15,11 +15,11 @@ public class Project {
     private Integer id;
     private String name;
     private String description;
-    private LocalDate startAt;
-    private LocalDate endAt;
+    private LocalDateTime startAt;
+    private LocalDateTime endAt;
     private LocalDateTime accessedAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", unique = true)
     private User manager;
 
@@ -34,12 +34,12 @@ public class Project {
     public Project() {
     }
 
-    public Project(String name, String description, LocalDate startAt, LocalDate endAt,
+    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt,
                    LocalDateTime accessedAt, User manager) {
         this(name, description, startAt, endAt, accessedAt, manager, new ArrayList<>(), new ArrayList<>());
     }
 
-    public Project(String name, String description, LocalDate startAt, LocalDate endAt,
+    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt,
                    LocalDateTime accessedAt, User manager, List<ProjectUser> projectUsers, List<Task> tasks) {
         this.name = name;
         this.description = description;
@@ -75,19 +75,19 @@ public class Project {
         this.description = description;
     }
 
-    public LocalDate getStartAt() {
+    public LocalDateTime getStartAt() {
         return startAt;
     }
 
-    public void setStartAt(LocalDate startAt) {
+    public void setStartAt(LocalDateTime startAt) {
         this.startAt = startAt;
     }
 
-    public LocalDate getEndAt() {
+    public LocalDateTime getEndAt() {
         return endAt;
     }
 
-    public void setEndAt(LocalDate endAt) {
+    public void setEndAt(LocalDateTime endAt) {
         this.endAt = endAt;
     }
 

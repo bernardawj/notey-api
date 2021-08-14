@@ -30,7 +30,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         // It is not a good practice to basic authentication to authenticate your API, use JWT instead.
-        // This is just to allow access to the API without creating a user table for it.
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 

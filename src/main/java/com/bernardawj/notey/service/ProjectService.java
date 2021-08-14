@@ -1,6 +1,9 @@
 package com.bernardawj.notey.service;
 
+import com.bernardawj.notey.dto.project.CreateProjectDTO;
+import com.bernardawj.notey.dto.project.DeleteProjectDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
+import com.bernardawj.notey.dto.project.UpdateProjectDTO;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
 
@@ -18,9 +21,9 @@ public interface ProjectService {
 
     ProjectDTO getProject(Integer projectId) throws ProjectServiceException;
 
-    ProjectDTO addProject(ProjectDTO projectDTO) throws UserServiceException, ProjectServiceException;
+    ProjectDTO createProject(CreateProjectDTO createProjectDTO) throws UserServiceException, ProjectServiceException;
 
-    ProjectDTO updateProject(ProjectDTO updateProjectDTO) throws ProjectServiceException;
+    ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO) throws ProjectServiceException;
 
-    void deleteProject(Integer projectId, Integer managerId) throws ProjectServiceException;
+    void deleteProject(DeleteProjectDTO deleteProjectDTO) throws ProjectServiceException;
 }

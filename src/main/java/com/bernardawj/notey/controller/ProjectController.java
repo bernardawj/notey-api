@@ -1,20 +1,22 @@
 package com.bernardawj.notey.controller;
 
-import com.bernardawj.notey.dto.project.AssignProjectDTO;
-import com.bernardawj.notey.dto.project.ProjectDTO;
+import com.bernardawj.notey.dto.project.*;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @CrossOrigin
 @RestController
 @RequestMapping(path = "/api/v1/project")
+@Validated
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -53,22 +55,21 @@ public class ProjectController {
     }
 
     @PostMapping()
-    public ResponseEntity<ProjectDTO> addProject(@RequestBody ProjectDTO projectDTO) throws UserServiceException,
+    public ResponseEntity<ProjectDTO> createProject(@Valid @RequestBody CreateProjectDTO createProjectDTO) throws UserServiceException,
             ProjectServiceException {
-        ProjectDTO returnedProjectDTO = this.projectService.addProject(projectDTO);
+        ProjectDTO returnedProjectDTO = this.projectService.createProject(createProjectDTO);
         return new ResponseEntity<>(returnedProjectDTO, HttpStatus.OK);
     }
 
     @PutMapping()
-    public ResponseEntity<ProjectDTO> updateProject(@RequestBody ProjectDTO projectDTO) throws ProjectServiceException {
-        ProjectDTO updatedProjectDTO = this.projectService.updateProject(projectDTO);
+    public ResponseEntity<ProjectDTO> updateProject(@RequestBody UpdateProjectDTO updateProjectDTO) throws ProjectServiceException {
+        ProjectDTO updatedProjectDTO = this.projectService.updateProject(updateProjectDTO);
         return new ResponseEntity<>(updatedProjectDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping(path = "/{projectId}/{managerId}")
-    public ResponseEntity<Void> deleteProject(@PathVariable("projectId") Integer projectId,
-                                              @PathVariable("managerId") Integer managerId) throws ProjectServiceException {
-        this.projectService.deleteProject(projectId, managerId);
+    @DeleteMapping()
+    public ResponseEntity<Void> deleteProject(@RequestBody DeleteProjectDTO deleteProjectDTO) throws ProjectServiceException {
+        this.projectService.deleteProject(deleteProjectDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
