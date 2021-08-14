@@ -57,4 +57,10 @@ public class TaskController {
         TaskDTO taskDTO = this.taskService.updateTask(updateTaskDTO);
         return new ResponseEntity<>(taskDTO, HttpStatus.OK);
     }
+
+    @DeleteMapping()
+    public ResponseEntity<Void> deleteTask(@RequestBody DeleteTaskDTO deleteTaskDTO) throws TaskServiceException {
+        this.taskService.deleteTask(deleteTaskDTO);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

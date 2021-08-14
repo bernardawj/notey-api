@@ -17,4 +17,7 @@ public interface TaskRepository extends CrudRepository<Task, Integer> {
 
     @Query("SELECT t FROM Task t WHERE t.user.id = :userId")
     Iterable<Task> findAllByUserId(@Param("userId") Integer userId);
+
+    @Query("SELECT t FROM Task t WHERE t.id = :taskId AND t.project.manager.id = :managerId")
+    Optional<Task> findByTaskIdAndManagerId(@Param("taskId") Integer taskId, @Param("managerId") Integer managerId);
 }

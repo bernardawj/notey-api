@@ -182,7 +182,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDTO deleteTask(Integer taskId, Integer managerId) throws TaskServiceException {
-        return null;
+    public void deleteTask(DeleteTaskDTO deleteTaskDTO) throws TaskServiceException {
+        // Check if tasks exists within the database
+        Optional<Task> optTask = this.taskRepository.findByTaskIdAndManagerId(deleteTaskDTO.getTaskId(),
+                deleteTaskDTO.getManagerId());
+        Task task = optTask.orElseThrow(() -> new TaskServiceException(TASK_NOT_FOUND));
+
+        // Delete from database
+        this.taskRepository.deleteById(task.getId());
     }
 }
