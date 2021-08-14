@@ -2,10 +2,12 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.LoginDTO;
 import com.bernardawj.notey.dto.UserDTO;
+import com.bernardawj.notey.dto.user.RegisterDTO;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.AuthServiceException;
 import com.bernardawj.notey.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -28,6 +30,22 @@ public class AuthServiceImpl implements AuthService {
                 loginDTO.getPassword());
         User user = optUser.orElseThrow(() -> new AuthServiceException("AuthService.USER_NOT_FOUND"));
 
-        return new UserDTO(user.getId(), user.getEmail(), user.getPassword(), user.getFirstName(), user.getLastName());
+        return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName());
+    }
+
+    @Override
+    public UserDTO register(RegisterDTO registerDTO) throws AuthServiceException {
+        // Check if user exists within the database
+        Optional<User> optUser = this.userRepository.findUserByEmail(registerDTO.getEmail());
+        if (optUser.isPresent())
+            throw new AuthServiceException("AuthService.USER_EXISTS");
+
+        // Store it into database
+        User user = new User(registerDTO.getEmail(), new BCryptPasswordEncoder().encode(registerDTO.getPassword()),
+                registerDTO.getFirstName(), registerDTO.getLastName());
+        this.userRepository.save(user);
+
+        // Return DTO
+        return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName());
     }
 }

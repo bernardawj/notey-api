@@ -35,14 +35,17 @@ public class User {
         this.id = id;
     }
 
-    public User(Integer id, String email, String password, String firstName, String lastName,
-                List<Project> managedProjects) {
-        this(id, email, password, firstName, lastName, managedProjects, new ArrayList<>(), new ArrayList<>());
+    public User(String email, String password, String firstName, String lastName) {
+        this(email, password, firstName, lastName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
-    public User(Integer id, String email, String password, String firstName, String lastName,
+    public User(String email, String password, String firstName, String lastName,
+                List<Project> managedProjects) {
+        this(email, password, firstName, lastName, managedProjects, new ArrayList<>(), new ArrayList<>());
+    }
+
+    public User(String email, String password, String firstName, String lastName,
                 List<Project> managedProjects, List<ProjectUser> projectUsers, List<Task> tasks) {
-        this.id = id;
         this.email = email;
         this.password = password;
         this.firstName = firstName;
