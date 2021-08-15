@@ -1,6 +1,9 @@
 package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.project.AssignProjectDTO;
+import com.bernardawj.notey.dto.project.CreateProjectDTO;
+import com.bernardawj.notey.dto.project.DeleteProjectDTO;
+import com.bernardawj.notey.dto.project.UpdateProjectDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.User;
@@ -14,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -126,5 +131,112 @@ public class ProjectServiceTests {
         boolean hasProjectUser = project.getProjectUsers().stream().anyMatch(pu ->
                 pu.getProjectId().intValue() == project.getId().intValue() && pu.getUserId() == user.getId().intValue());
         Assertions.assertTrue(hasProjectUser);
+    }
+
+    @Test
+    public void invalidProjectIdAndUserIdOnGetProjectShouldThrowException() {
+        // Mock the behavior of repository
+        Mockito.when(this.projectRepository.findProjectByProjectIdAndManagerIdOrUserId(Mockito.anyInt(),
+                Mockito.anyInt())).thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        ProjectServiceException ex = Assertions.assertThrows(ProjectServiceException.class,
+                () -> this.projectService.getProject(1, 1));
+
+        // Check if exception message is the same
+        Assertions.assertEquals("ProjectService.PROJECT_NOT_FOUND", ex.getMessage());
+    }
+
+    @Test
+    public void invalidUserIdOnCreateProjectShouldThrowException() {
+        // Mock DTO
+        CreateProjectDTO createProjectDTO = new CreateProjectDTO();
+        createProjectDTO.setManagerId(1);
+
+        // Mock the behavior of repository
+        Mockito.when(this.userRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        ProjectServiceException ex = Assertions.assertThrows(ProjectServiceException.class,
+                () -> this.projectService.createProject(createProjectDTO));
+
+        // Check if exception message is the same
+        Assertions.assertEquals("ProjectService.USER_NOT_FOUND", ex.getMessage());
+    }
+
+    @Test
+    public void invalidProjectDatesOnCreateProjectShouldThrowException() {
+        // Mock DTO
+        CreateProjectDTO createProjectDTO = new CreateProjectDTO();
+        createProjectDTO.setManagerId(1);
+        createProjectDTO.setStartAt(LocalDateTime.of(2021, Month.FEBRUARY, 1, 12, 0));
+        createProjectDTO.setEndAt(LocalDateTime.of(2021, Month.JANUARY, 1, 12, 0));
+
+        // Mock the behavior of repository
+        Mockito.when(this.userRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(new User()));
+
+        // Check if method indeed throws an exception
+        ProjectServiceException ex = Assertions.assertThrows(ProjectServiceException.class,
+                () -> this.projectService.createProject(createProjectDTO));
+
+        // Check if exception message is the same
+        Assertions.assertEquals("ProjectService.INVALID_PROJECT_DATES", ex.getMessage());
+    }
+
+    @Test
+    public void invalidProjectIdAndManagerIdOnUpdateProjectShouldThrowException() {
+        // Mock DTO
+        UpdateProjectDTO updateProjectDTO = new UpdateProjectDTO();
+        updateProjectDTO.setId(1);
+        updateProjectDTO.setManagerId(45);
+
+        // Mock the behavior of repository
+        Mockito.when(this.projectRepository.findProjectByProjectIdAndManagerId(Mockito.anyInt(),
+                Mockito.anyInt())).thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        ProjectServiceException ex = Assertions.assertThrows(ProjectServiceException.class,
+                () -> this.projectService.updateProject(updateProjectDTO));
+
+        // Check if exception message is the same
+        Assertions.assertEquals("ProjectService.PROJECT_NOT_FOUND", ex.getMessage());
+    }
+
+    @Test
+    public void invalidProjectDatesOnUpdateProjectShouldThrowException() {
+        // Mock DTO
+        UpdateProjectDTO updateProjectDTO = new UpdateProjectDTO();
+        updateProjectDTO.setId(1);
+        updateProjectDTO.setManagerId(45);
+        updateProjectDTO.setStartAt(LocalDateTime.of(2021, Month.FEBRUARY, 1, 12, 0));
+        updateProjectDTO.setEndAt(LocalDateTime.of(2021, Month.JANUARY, 1, 12, 0));
+
+        // Mock the behavior of repository
+        Mockito.when(this.projectRepository.findProjectByProjectIdAndManagerId(Mockito.anyInt(),
+                Mockito.anyInt())).thenReturn(Optional.of(new Project()));
+
+        // Check if method indeed throws an exception
+        ProjectServiceException ex = Assertions.assertThrows(ProjectServiceException.class,
+                () -> this.projectService.updateProject(updateProjectDTO));
+
+        // Check if exception message is the same
+        Assertions.assertEquals("ProjectService.INVALID_PROJECT_DATES", ex.getMessage());
+    }
+
+    @Test
+    public void invalidProjectIdAndManagerIdOnDeleteProjectShouldThrowException() {
+        // Mock DTO
+        DeleteProjectDTO deleteProjectDTO = new DeleteProjectDTO(1, 1);
+
+        // Mock the behavior of repository
+        Mockito.when(this.projectRepository.findProjectByProjectIdAndManagerId(Mockito.anyInt(),
+                Mockito.anyInt())).thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        ProjectServiceException ex = Assertions.assertThrows(ProjectServiceException.class,
+                () -> this.projectService.deleteProject(deleteProjectDTO));
+
+        // Check if exception message is the same
+        Assertions.assertEquals("ProjectService.PROJECT_NOT_FOUND", ex.getMessage());
     }
 }

@@ -8,6 +8,7 @@ import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
+import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final ProjectUserRepository projectUserRepository;
     private final UserService userService;
 
     private final String PROJECT_NOT_FOUND = "ProjectService.PROJECT_NOT_FOUND";
@@ -34,9 +36,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     public ProjectServiceImpl(ProjectRepository projectRepository, UserRepository userRepository,
-                              UserService userService) {
+                              ProjectUserRepository projectUserRepository, UserService userService) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.projectUserRepository = projectUserRepository;
         this.userService = userService;
     }
 
@@ -92,9 +95,10 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectDTO getProject(Integer projectId) throws ProjectServiceException {
+    public ProjectDTO getProject(Integer projectId, Integer userId) throws ProjectServiceException {
         // Check if project exists
-        Optional<Project> optProject = this.projectRepository.findById(projectId);
+        Optional<Project> optProject = this.projectRepository.findProjectByProjectIdAndManagerIdOrUserId(projectId,
+                userId);
         Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
 
         return populateProjectDTO(project);

@@ -16,7 +16,7 @@ public interface ProjectService {
 
     void assignUserToProject(AssignProjectDTO assignProjectDTO) throws ProjectServiceException, UserServiceException;
 
-    ProjectDTO getProject(Integer projectId) throws ProjectServiceException;
+    ProjectDTO getProject(Integer projectId, Integer userId) throws ProjectServiceException;
 
     ProjectDTO createProject(CreateProjectDTO createProjectDTO) throws UserServiceException, ProjectServiceException;
 
