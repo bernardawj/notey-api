@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Prevent updating of application.properties
+src/main/resources/application.properties
