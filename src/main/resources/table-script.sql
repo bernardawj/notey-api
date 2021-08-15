@@ -27,9 +27,9 @@ CREATE TABLE projects
 
 CREATE TABLE project_users
 (
-    project_id   INTEGER   NOT NULL,
-    user_id      INTEGER   NOT NULL,
-    has_accepted BOOLEAN   NOT NULL,
+    project_id   INTEGER NOT NULL,
+    user_id      INTEGER NOT NULL,
+    has_accepted BOOLEAN NOT NULL,
     CONSTRAINT pk_project_users PRIMARY KEY (project_id, user_id),
     CONSTRAINT fk_project_id FOREIGN KEY (project_id) REFERENCES projects (id),
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id)
@@ -66,8 +66,12 @@ CREATE TABLE notes
 
 CREATE TABLE notifications
 (
-    id      SERIAL  NOT NULL,
-    message TEXT    NOT NULL,
-    user_id INTEGER NOT NULL,
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id)
+    id           SERIAL    NOT NULL,
+    message      TEXT      NOT NULL,
+    type         TEXT      NOT NULL,
+    created_at   TIMESTAMP NOT NULL,
+    user_id      INTEGER   NOT NULL,
+    from_user_id INTEGER   NOT NULL,
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_from_user_id FOREIGN KEY (from_user_id) REFERENCES users (id)
 );

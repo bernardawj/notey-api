@@ -28,24 +28,26 @@ public class User {
     @JoinColumn(name = "user_id", unique = true)
     private List<Task> tasks;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", unique = true)
+    private List<Notification> notifications;
+
     public User() {
     }
 
-    public User(Integer id) {
-        this.id = id;
-    }
-
     public User(String email, String password, String firstName, String lastName) {
-        this(email, password, firstName, lastName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        this(email, password, firstName, lastName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>());
     }
 
     public User(String email, String password, String firstName, String lastName,
                 List<Project> managedProjects) {
-        this(email, password, firstName, lastName, managedProjects, new ArrayList<>(), new ArrayList<>());
+        this(email, password, firstName, lastName, managedProjects, new ArrayList<>(), new ArrayList<>(),
+                new ArrayList<>());
     }
 
-    public User(String email, String password, String firstName, String lastName,
-                List<Project> managedProjects, List<ProjectUser> projectUsers, List<Task> tasks) {
+    public User(String email, String password, String firstName, String lastName, List<Project> managedProjects,
+                List<ProjectUser> projectUsers, List<Task> tasks, List<Notification> notifications) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
@@ -53,6 +55,7 @@ public class User {
         this.managedProjects = managedProjects;
         this.projectUsers = projectUsers;
         this.tasks = tasks;
+        this.notifications = notifications;
     }
 
     public Integer getId() {
@@ -117,5 +120,13 @@ public class User {
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 }
