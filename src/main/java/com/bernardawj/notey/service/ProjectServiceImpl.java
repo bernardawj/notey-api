@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -64,18 +62,6 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<ProjectDTO> getRecentlyAccessedProjects(Integer userId, Integer count) throws UserServiceException {
-        // Check if user exists
-        UserDTO userDTO = this.userService.getUserDetails(userId);
-
-        // Get recently accessed projects
-        Iterable<Project> projects = this.projectRepository.findRecentlyAccessedProjects(userDTO.getId());
-
-        // Pack into DTO list and return
-        return populateProjectsDTO(userDTO, projects);
-    }
-
-    @Override
     public void assignUserToProject(AssignProjectDTO assignProjectDTO) throws ProjectServiceException {
         // Check if project exists
         Optional<Project> optProject = this.projectRepository.findById(assignProjectDTO.getProjectId());
@@ -116,7 +102,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Save to database
         Project project = new Project(createProjectDTO.getName(), createProjectDTO.getDescription(),
-                createProjectDTO.getStartAt(), createProjectDTO.getEndAt(), LocalDateTime.now(ZoneOffset.UTC), user);
+                createProjectDTO.getStartAt(), createProjectDTO.getEndAt(), user);
         this.projectRepository.save(project);
 
         return populateProjectDTO(project);
@@ -144,7 +130,7 @@ public class ProjectServiceImpl implements ProjectService {
         UserDTO manager = new UserDTO(project.getManager().getId(), project.getManager().getEmail(), null,
                 project.getManager().getFirstName(), project.getManager().getLastName());
         return new ProjectDTO(project.getId(), project.getName(), project.getDescription(), project.getStartAt(),
-                project.getEndAt(), project.getAccessedAt(), manager);
+                project.getEndAt(), manager);
     }
 
     @Override
@@ -166,7 +152,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Populate project DTO
         ProjectDTO projectDTO = new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
-                project.getStartAt(), project.getEndAt(), project.getAccessedAt(), managerDTO, null);
+                project.getStartAt(), project.getEndAt(), managerDTO, null);
 
         // Populate assigned users DTO
         List<ProjectUserDTO> assignedUsersDTO = new ArrayList<>();

@@ -1,7 +1,7 @@
 package com.bernardawj.notey.service;
 
-import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
+import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.UserServiceException;
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
                     projectUser.getProject().getManager().getLastName());
             assignedProjects.add(new ProjectDTO(projectUser.getProject().getId(), projectUser.getProject().getName(),
                     projectUser.getProject().getDescription(), projectUser.getProject().getStartAt(),
-                    projectUser.getProject().getEndAt(), projectUser.getProject().getAccessedAt(), manager));
+                    projectUser.getProject().getEndAt(), manager));
         });
 
         return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName(),

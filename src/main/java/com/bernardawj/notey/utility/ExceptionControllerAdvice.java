@@ -1,9 +1,6 @@
 package com.bernardawj.notey.utility;
 
-import com.bernardawj.notey.exception.NoteServiceException;
-import com.bernardawj.notey.exception.ProjectServiceException;
-import com.bernardawj.notey.exception.TaskServiceException;
-import com.bernardawj.notey.exception.UserServiceException;
+import com.bernardawj.notey.exception.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +29,7 @@ public class ExceptionControllerAdvice {
     }
 
     @ExceptionHandler({ NoteServiceException.class, ProjectServiceException.class, UserServiceException.class,
-            TaskServiceException.class })
+            TaskServiceException.class, AuthServiceException.class })
     public ResponseEntity<ErrorInfo> serviceExceptionHandler(Exception exception) {
         LOGGER.error(exception.getMessage(), exception);
         HttpStatus status = HttpStatus.BAD_REQUEST;

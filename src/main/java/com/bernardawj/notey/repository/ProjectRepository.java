@@ -12,18 +12,12 @@ public interface ProjectRepository extends CrudRepository<Project, Integer> {
     @Query("SELECT p FROM Project p WHERE p.manager.id = :managerId")
     Iterable<Project> findProjectsByManagerId(@Param("managerId") Integer managerId);
 
-    @Query("SELECT p FROM Project p WHERE LOWER(p.name) = LOWER(:name) ")
-    Optional<Project> findProjectByName(@Param("name") String name);
-
     @Query("SELECT p FROM Project p WHERE p.id = :projectId AND p.manager.id = :managerId")
     Optional<Project> findProjectByProjectIdAndManagerId(@Param("projectId") Integer projectId,
                                                          @Param("managerId") Integer managerId);
 
-    @Query("SELECT p FROM Project p INNER JOIN ProjectUser pu ON p.id = pu.projectId WHERE p.id = :projectId AND (p" +
+    @Query("SELECT p FROM Project p LEFT JOIN ProjectUser pu ON p.id = pu.projectId WHERE p.id = :projectId AND (p" +
             ".manager.id = :userId OR pu.userId = :userId)")
     Optional<Project> findProjectByProjectIdAndManagerIdOrUserId(@Param("projectId") Integer projectId,
                                                                  @Param("userId") Integer userId);
-
-    @Query("SELECT p FROM Project p WHERE p.manager.id = :userId ORDER BY p.accessedAt DESC")
-    Iterable<Project> findRecentlyAccessedProjects(@Param("userId") Integer userId);
 }

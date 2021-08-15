@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS notes;
 DROP TABLE IF EXISTS tasks;
 DROP TABLE IF EXISTS project_users;
@@ -20,16 +21,15 @@ CREATE TABLE projects
     description TEXT      NOT NULL,
     start_at    TIMESTAMP NOT NULL,
     end_at      TIMESTAMP NOT NULL,
-    accessed_at TIMESTAMP NOT NULL,
     manager_id  INTEGER   NOT NULL,
     CONSTRAINT fk_manager_id FOREIGN KEY (manager_id) REFERENCES users (id)
 );
 
 CREATE TABLE project_users
 (
-    project_id   INTEGER NOT NULL,
-    user_id      INTEGER NOT NULL,
-    has_accepted BOOLEAN NOT NULL,
+    project_id   INTEGER   NOT NULL,
+    user_id      INTEGER   NOT NULL,
+    has_accepted BOOLEAN   NOT NULL,
     CONSTRAINT pk_project_users PRIMARY KEY (project_id, user_id),
     CONSTRAINT fk_project_id FOREIGN KEY (project_id) REFERENCES projects (id),
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id)
@@ -64,9 +64,10 @@ CREATE TABLE notes
     CONSTRAINT fk_project_id FOREIGN KEY (project_id) REFERENCES projects (id)
 );
 
-INSERT INTO users (email, password, first_name, last_name)
-VALUES ('ben@email.com', 'ben123', 'Ben', 'Tan');
-INSERT INTO users (email, password, first_name, last_name)
-VALUES ('carly@email.com', 'carly123', 'Carly', 'Lee');
-INSERT INTO users (email, password, first_name, last_name)
-VALUES ('daniel@email.com', 'daniel123', 'Daniel', 'Wong');
+CREATE TABLE notifications
+(
+    id      SERIAL  NOT NULL,
+    message TEXT    NOT NULL,
+    user_id INTEGER NOT NULL,
+    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id)
+);

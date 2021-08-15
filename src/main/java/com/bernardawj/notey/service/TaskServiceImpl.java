@@ -1,8 +1,8 @@
 package com.bernardawj.notey.service;
 
-import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.task.*;
+import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
@@ -69,7 +69,7 @@ public class TaskServiceImpl implements TaskService {
                 task.getProject().getManager().getLastName());
         ProjectDTO projectDTO = new ProjectDTO(task.getProject().getId(), task.getProject().getName(),
                 task.getProject().getDescription(), task.getProject().getStartAt(), task.getProject().getEndAt(),
-                task.getProject().getAccessedAt(), managerDTO);
+                managerDTO);
         return new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(), task.getCompleted(),
                 task.getStartAt(), task.getEndAt(), task.getCreatedAt(), projectDTO, null);
     }

@@ -1,7 +1,6 @@
 package com.bernardawj.notey.entity;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,6 @@ public class Project {
     private String description;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
-    private LocalDateTime accessedAt;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", unique = true)
@@ -34,18 +32,16 @@ public class Project {
     public Project() {
     }
 
-    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt,
-                   LocalDateTime accessedAt, User manager) {
-        this(name, description, startAt, endAt, accessedAt, manager, new ArrayList<>(), new ArrayList<>());
+    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt, User manager) {
+        this(name, description, startAt, endAt, manager, new ArrayList<>(), new ArrayList<>());
     }
 
-    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt,
-                   LocalDateTime accessedAt, User manager, List<ProjectUser> projectUsers, List<Task> tasks) {
+    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt, User manager,
+                   List<ProjectUser> projectUsers, List<Task> tasks) {
         this.name = name;
         this.description = description;
         this.startAt = startAt;
         this.endAt = endAt;
-        this.accessedAt = accessedAt;
         this.manager = manager;
         this.projectUsers = projectUsers;
         this.tasks = tasks;
@@ -89,14 +85,6 @@ public class Project {
 
     public void setEndAt(LocalDateTime endAt) {
         this.endAt = endAt;
-    }
-
-    public LocalDateTime getAccessedAt() {
-        return accessedAt;
-    }
-
-    public void setAccessedAt(LocalDateTime accessedAt) {
-        this.accessedAt = accessedAt;
     }
 
     public User getManager() {

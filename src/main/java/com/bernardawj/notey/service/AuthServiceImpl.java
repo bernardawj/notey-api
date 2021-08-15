@@ -6,6 +6,7 @@ import com.bernardawj.notey.dto.auth.RegisterDTO;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.AuthServiceException;
 import com.bernardawj.notey.repository.UserRepository;
+import com.bernardawj.notey.security.WebSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,9 +27,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDTO login(LoginDTO loginDTO) throws AuthServiceException {
-        Optional<User> optUser = this.userRepository.findUserByEmailAndPassword(loginDTO.getEmail(),
-                loginDTO.getPassword());
+        Optional<User> optUser = this.userRepository.findUserByEmail(loginDTO.getEmail());
         User user = optUser.orElseThrow(() -> new AuthServiceException("AuthService.USER_NOT_FOUND"));
+
+        boolean passwordMatched = new BCryptPasswordEncoder().matches(loginDTO.getPassword(), user.getPassword());
+        if (!passwordMatched)
+            throw new AuthServiceException("AuthService.WRONG_PASSWORD");
 
         return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName());
     }

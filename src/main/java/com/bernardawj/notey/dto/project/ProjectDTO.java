@@ -12,7 +12,6 @@ public class ProjectDTO {
     private String description;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
-    private LocalDateTime accessedAt;
 
     private UserDTO manager;
     private List<ProjectUserDTO> assignedUsers;
@@ -21,18 +20,17 @@ public class ProjectDTO {
     }
 
     public ProjectDTO(Integer id, String name, String description, LocalDateTime startAt, LocalDateTime endAt,
-                      LocalDateTime accessedAt, UserDTO manager) {
-        this(id, name, description, startAt, endAt, accessedAt, manager, null);
+                      UserDTO manager) {
+        this(id, name, description, startAt, endAt, manager, null);
     }
 
     public ProjectDTO(Integer id, String name, String description, LocalDateTime startAt, LocalDateTime endAt,
-                      LocalDateTime accessedAt, UserDTO manager, List<ProjectUserDTO> assignedUsers) {
+                      UserDTO manager, List<ProjectUserDTO> assignedUsers) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.startAt = startAt;
         this.endAt = endAt;
-        this.accessedAt = accessedAt;
         this.manager = manager;
         this.assignedUsers = assignedUsers;
     }
@@ -83,14 +81,6 @@ public class ProjectDTO {
 
     public void setManager(UserDTO manager) {
         this.manager = manager;
-    }
-
-    public LocalDateTime getAccessedAt() {
-        return accessedAt;
-    }
-
-    public void setAccessedAt(LocalDateTime accessedAt) {
-        this.accessedAt = accessedAt;
     }
 
     public List<ProjectUserDTO> getAssignedUsers() {
