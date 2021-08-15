@@ -50,7 +50,7 @@ public class ProjectController {
     @PostMapping(path = "/assign")
     public ResponseEntity<Void> assignUserToProject(@RequestBody AssignProjectDTO assignProjectDTO)
             throws UserServiceException, ProjectServiceException {
-        this.projectService.assignUserToProject(assignProjectDTO.getProjectId(), assignProjectDTO.getEmail());
+        this.projectService.assignUserToProject(assignProjectDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

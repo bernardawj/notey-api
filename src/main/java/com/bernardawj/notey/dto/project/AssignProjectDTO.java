@@ -5,6 +5,9 @@ public class AssignProjectDTO {
     private Integer projectId;
     private String email;
 
+    public AssignProjectDTO() {
+    }
+
     public AssignProjectDTO(Integer projectId, String email) {
         this.projectId = projectId;
         this.email = email;

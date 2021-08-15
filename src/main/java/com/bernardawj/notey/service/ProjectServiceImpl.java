@@ -73,13 +73,13 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void assignUserToProject(Integer projectId, String email) throws ProjectServiceException {
+    public void assignUserToProject(AssignProjectDTO assignProjectDTO) throws ProjectServiceException {
         // Check if project exists
-        Optional<Project> optProject = this.projectRepository.findById(projectId);
+        Optional<Project> optProject = this.projectRepository.findById(assignProjectDTO.getProjectId());
         Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
 
         // Check if user exists
-        Optional<User> optUser = this.userRepository.findUserByEmail(email);
+        Optional<User> optUser = this.userRepository.findUserByEmail(assignProjectDTO.getEmail());
         User user = optUser.orElseThrow(() -> new ProjectServiceException(USER_NOT_FOUND));
 
         // Check if user is the manager
