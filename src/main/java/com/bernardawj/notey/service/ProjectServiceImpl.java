@@ -79,6 +79,12 @@ public class ProjectServiceImpl implements ProjectService {
         Optional<User> optUser = this.userRepository.findUserByEmail(assignProjectDTO.getEmail());
         User user = optUser.orElseThrow(() -> new ProjectServiceException(USER_NOT_FOUND));
 
+        // Check if user is already in the project
+        Optional<ProjectUser> optProjectUser = this.projectUserRepository.findByProjectIdAndUserId(project.getId(),
+                user.getId());
+        if (optProjectUser.isPresent())
+            throw new ProjectServiceException("ProjectService.USER_EXISTS_IN_PROJECT");
+
         // Check if user is the manager
         if (project.getManager().getId().intValue() == user.getId().intValue())
             throw new ProjectServiceException(USER_IS_MANAGER);

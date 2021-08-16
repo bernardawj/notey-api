@@ -10,11 +10,8 @@ import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
 
-    @Query("SELECT u FROM User u WHERE u.email = :email")
+    @Query("SELECT u FROM User u WHERE LOWER(u.email) = LOWER(:email)")
     Optional<User> findUserByEmail(@Param("email") String email);
-
-    @Query("SELECT u FROM User u WHERE u.email = :email AND u.password = :password")
-    Optional<User> findUserByEmailAndPassword(@Param("email") String email, @Param("password") String password);
 
     @Query("SELECT u FROM User u WHERE u.id IN (:fromUserId, :toUserId)")
     List<User> findUsersByFromUserIdAndToUserId(@Param("fromUserId") Integer fromUserId,

@@ -1,5 +1,6 @@
 package com.bernardawj.notey.service;
 
+import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.AssignProjectDTO;
 import com.bernardawj.notey.dto.project.CreateProjectDTO;
 import com.bernardawj.notey.dto.project.DeleteProjectDTO;
@@ -10,6 +11,7 @@ import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
+import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,11 +34,17 @@ public class ProjectServiceTests {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ProjectUserRepository projectUserRepository;
+
+    @Mock
+    private NotificationService notificationService;
+
     @InjectMocks
     private ProjectServiceImpl projectService;
 
     @Test
-    public void invalidProjectIdOnAssignUserToProjectShouldThrow() {
+    public void invalidProjectIdOnAssignUserToProjectShouldThrowException() {
         // Mock DTO
         AssignProjectDTO assignProjectDTO = new AssignProjectDTO(1, "dummy@email.com");
 
@@ -52,7 +60,7 @@ public class ProjectServiceTests {
     }
 
     @Test
-    public void invalidEmailOnAssignUserToProjectShouldThrow() {
+    public void invalidEmailOnAssignUserToProjectShouldThrowException() {
         // Mock DTO
         AssignProjectDTO assignProjectDTO = new AssignProjectDTO(1, "dummy@email.com");
 
@@ -73,7 +81,37 @@ public class ProjectServiceTests {
     }
 
     @Test
-    public void invalidManagerAssignmentOnAssignUserToProjectShouldThrow() {
+    public void invalidUserExistsInProjectOnAssignUserToProjectShouldThrowException() {
+        // Mock DTO
+        AssignProjectDTO assignProjectDTO = new AssignProjectDTO(1, "dummy@email.com");
+
+        // Mock entity
+        User user = new User();
+        user.setId(1);
+
+        User manager = new User();
+        manager.setId(1);
+
+        Project project = new Project();
+        project.setId(1);
+        project.setManager(manager);
+
+        // Mock the behavior of repository
+        Mockito.when(this.projectRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(project));
+        Mockito.when(this.userRepository.findUserByEmail(Mockito.anyString())).thenReturn(Optional.of(user));
+        Mockito.when(this.projectUserRepository.findByProjectIdAndUserId(Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(Optional.of(new ProjectUser()));
+
+        // Check if the service method indeed throws an exception
+        ProjectServiceException ex = Assertions.assertThrows(ProjectServiceException.class,
+                () -> projectService.assignUserToProject(assignProjectDTO));
+
+        // Check if the right message is thrown
+        Assertions.assertEquals("ProjectService.USER_EXISTS_IN_PROJECT", ex.getMessage());
+    }
+
+    @Test
+    public void invalidManagerAssignmentOnAssignUserToProjectShouldThrowException() {
         // Mock DTO
         AssignProjectDTO assignProjectDTO = new AssignProjectDTO(1, "dummy@email.com");
 
@@ -123,7 +161,9 @@ public class ProjectServiceTests {
         // Mock the behavior of repository
         Mockito.when(this.projectRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(project));
         Mockito.when(this.userRepository.findUserByEmail(Mockito.anyString())).thenReturn(Optional.of(user));
+        Mockito.when(this.projectUserRepository.findByProjectIdAndUserId(Mockito.anyInt(), Mockito.anyInt())).thenReturn(Optional.empty());
         Mockito.when(this.projectRepository.save(Mockito.any(Project.class))).thenReturn(project);
+        Mockito.doNothing().when(this.notificationService).createNotification(Mockito.any(CreateNotificationDTO.class));
 
         // Call service method
         this.projectService.assignUserToProject(assignProjectDTO);
