@@ -1,6 +1,7 @@
 package com.bernardawj.notey.controller;
 
 import com.bernardawj.notey.dto.project.*;
+import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.service.ProjectService;
@@ -42,7 +43,7 @@ public class ProjectController {
 
     @PostMapping(path = "/assign")
     public ResponseEntity<Void> assignUserToProject(@RequestBody AssignProjectDTO assignProjectDTO)
-            throws UserServiceException, ProjectServiceException {
+            throws ProjectServiceException, NotificationServiceException {
         this.projectService.assignUserToProject(assignProjectDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

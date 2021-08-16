@@ -21,7 +21,7 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @PostMapping(path = "/project")
+    @PostMapping()
     public ResponseEntity<TaskDTO> createTask(@RequestBody CreateTaskDTO createTaskDTO) throws TaskServiceException {
         TaskDTO createdTaskDTO = this.taskService.createTask(createTaskDTO);
         return new ResponseEntity<>(createdTaskDTO, HttpStatus.OK);

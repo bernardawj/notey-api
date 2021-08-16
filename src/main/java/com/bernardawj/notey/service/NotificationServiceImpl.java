@@ -79,6 +79,15 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public void clearAllUserNotifications(Integer userId) {
+        // Check if notifications exists
+        Iterable<Notification> notifications = this.notificationRepository.findAllByUserId(userId);
+
+        // Delete from database
+        this.notificationRepository.deleteAll(notifications);
+    }
+
+    @Override
     public void deleteNotification(DeleteNotificationDTO deleteNotificationDTO) throws NotificationServiceException {
         // Check if notification exists
         Optional<Notification> optNotification =

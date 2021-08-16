@@ -1,5 +1,6 @@
 package com.bernardawj.notey.dto.project;
 
+import com.bernardawj.notey.dto.task.TaskDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 
 import java.time.LocalDateTime;
@@ -15,17 +16,18 @@ public class ProjectDTO {
 
     private UserDTO manager;
     private List<ProjectUserDTO> assignedUsers;
+    private List<TaskDTO> tasks;
 
     public ProjectDTO() {
     }
 
     public ProjectDTO(Integer id, String name, String description, LocalDateTime startAt, LocalDateTime endAt,
                       UserDTO manager) {
-        this(id, name, description, startAt, endAt, manager, null);
+        this(id, name, description, startAt, endAt, manager, null, null);
     }
 
     public ProjectDTO(Integer id, String name, String description, LocalDateTime startAt, LocalDateTime endAt,
-                      UserDTO manager, List<ProjectUserDTO> assignedUsers) {
+                      UserDTO manager, List<ProjectUserDTO> assignedUsers, List<TaskDTO> tasks) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -33,6 +35,7 @@ public class ProjectDTO {
         this.endAt = endAt;
         this.manager = manager;
         this.assignedUsers = assignedUsers;
+        this.tasks = tasks;
     }
 
     public Integer getId() {
@@ -89,5 +92,13 @@ public class ProjectDTO {
 
     public void setAssignedUsers(List<ProjectUserDTO> assignedUsers) {
         this.assignedUsers = assignedUsers;
+    }
+
+    public List<TaskDTO> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<TaskDTO> tasks) {
+        this.tasks = tasks;
     }
 }

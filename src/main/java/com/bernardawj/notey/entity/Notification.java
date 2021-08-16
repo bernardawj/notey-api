@@ -27,12 +27,12 @@ public class Notification {
     public Notification() {
     }
 
-    public Notification(String message, NotificationType type, LocalDateTime createdAt, User user, User fromUser) {
+    public Notification(String message, NotificationType type, LocalDateTime createdAt, User fromUser, User toUser) {
         this.message = message;
         this.type = type;
         this.createdAt = createdAt;
-        this.user = user;
         this.fromUser = fromUser;
+        this.user = toUser;
     }
 
     public Integer getId() {

@@ -16,5 +16,7 @@ public interface NotificationService {
 
     List<NotificationDTO> getAllUserNotifications(Integer userId);
 
+    void clearAllUserNotifications(Integer userId);
+
     void deleteNotification(DeleteNotificationDTO deleteNotificationDTO) throws NotificationServiceException;
 }

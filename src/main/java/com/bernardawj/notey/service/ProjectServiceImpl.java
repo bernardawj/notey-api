@@ -1,10 +1,14 @@
 package com.bernardawj.notey.service;
 
+import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.*;
+import com.bernardawj.notey.dto.task.TaskDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.User;
+import com.bernardawj.notey.enums.NotificationType;
+import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
@@ -26,6 +30,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final UserRepository userRepository;
     private final ProjectUserRepository projectUserRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     private final String PROJECT_NOT_FOUND = "ProjectService.PROJECT_NOT_FOUND";
     private final String INVALID_PROJECT_DATES = "ProjectService.INVALID_PROJECT_DATES";
@@ -34,11 +39,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     public ProjectServiceImpl(ProjectRepository projectRepository, UserRepository userRepository,
-                              ProjectUserRepository projectUserRepository, UserService userService) {
+                              ProjectUserRepository projectUserRepository, UserService userService,
+                              NotificationService notificationService) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.projectUserRepository = projectUserRepository;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -62,7 +69,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void assignUserToProject(AssignProjectDTO assignProjectDTO) throws ProjectServiceException {
+    public void assignUserToProject(AssignProjectDTO assignProjectDTO) throws ProjectServiceException,
+            NotificationServiceException {
         // Check if project exists
         Optional<Project> optProject = this.projectRepository.findById(assignProjectDTO.getProjectId());
         Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
@@ -78,6 +86,16 @@ public class ProjectServiceImpl implements ProjectService {
         // Update project and save to database
         project.getProjectUsers().add(new ProjectUser(project.getId(), user.getId(), false, null));
         this.projectRepository.save(project);
+
+        // Create notification and save to database
+        CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
+        createNotificationDTO.setMessage(String.format("Project (%s) has been assigned to you by %s %s.",
+                project.getName(),
+                project.getManager().getFirstName(), project.getManager().getLastName()));
+        createNotificationDTO.setType(NotificationType.PROJECT_APPROVAL);
+        createNotificationDTO.setFromUserId(project.getManager().getId());
+        createNotificationDTO.setToUserId(user.getId());
+        this.notificationService.createNotification(createNotificationDTO);
     }
 
     @Override
@@ -152,7 +170,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Populate project DTO
         ProjectDTO projectDTO = new ProjectDTO(project.getId(), project.getName(), project.getDescription(),
-                project.getStartAt(), project.getEndAt(), managerDTO, null);
+                project.getStartAt(), project.getEndAt(), managerDTO, null, null);
 
         // Populate assigned users DTO
         List<ProjectUserDTO> assignedUsersDTO = new ArrayList<>();
@@ -162,7 +180,15 @@ public class ProjectServiceImpl implements ProjectService {
                     projectUser.getHasAccepted()));
         });
 
+        // Populate tasks DTO
+        List<TaskDTO> tasksDTO = new ArrayList<>();
+        project.getTasks().forEach(task -> {
+            tasksDTO.add(new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(),
+                    task.getCompleted(), task.getStartAt(), task.getEndAt(), task.getCreatedAt()));
+        });
+
         projectDTO.setAssignedUsers(assignedUsersDTO);
+        projectDTO.setTasks(tasksDTO);
 
         return projectDTO;
     }

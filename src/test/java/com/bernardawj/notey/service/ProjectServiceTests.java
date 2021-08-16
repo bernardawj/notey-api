@@ -7,6 +7,7 @@ import com.bernardawj.notey.dto.project.UpdateProjectDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.User;
+import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.UserRepository;
@@ -100,7 +101,7 @@ public class ProjectServiceTests {
     }
 
     @Test
-    public void validOnAssignUserToProject() throws ProjectServiceException {
+    public void validOnAssignUserToProject() throws ProjectServiceException, NotificationServiceException {
         // Mock DTO
         AssignProjectDTO assignProjectDTO = new AssignProjectDTO(1, "user@email.com");
 

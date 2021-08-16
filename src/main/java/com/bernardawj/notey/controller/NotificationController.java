@@ -38,9 +38,15 @@ public class NotificationController {
     }
 
     @GetMapping(path = "/{userId}")
-    public ResponseEntity<List<NotificationDTO>> getNotification(@PathVariable("userId") Integer userId) throws NotificationServiceException {
+    public ResponseEntity<List<NotificationDTO>> getAllUserNotifications(@PathVariable("userId") Integer userId) throws NotificationServiceException {
         List<NotificationDTO> notificationsDTO = this.notificationService.getAllUserNotifications(userId);
         return new ResponseEntity<>(notificationsDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/{userId}")
+    public ResponseEntity<Void> clearAllUserNotifications(@PathVariable("userId") Integer userId) throws NotificationServiceException {
+        this.notificationService.clearAllUserNotifications(userId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping()
