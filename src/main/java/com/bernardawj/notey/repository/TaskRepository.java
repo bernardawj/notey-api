@@ -1,13 +1,15 @@
 package com.bernardawj.notey.repository;
 
 import com.bernardawj.notey.entity.Task;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface TaskRepository extends CrudRepository<Task, Integer> {
+public interface TaskRepository extends PagingAndSortingRepository<Task, Integer> {
 
     @Query("SELECT t FROM Task t WHERE t.project.id = :projectId AND t.name = :taskName")
     Optional<Task> findByProjectIdAndTaskName(@Param("projectId") Integer projectId,
@@ -16,9 +18,12 @@ public interface TaskRepository extends CrudRepository<Task, Integer> {
     @Query("SELECT t FROM Task t WHERE t.id = :taskId AND t.user.id = :userId")
     Optional<Task> findByTaskIdAndUserId(@Param("taskId") Integer taskId, @Param("userId") Integer userId);
 
-    @Query("SELECT t FROM Task t WHERE t.user.id = :userId")
-    Iterable<Task> findAllByUserId(@Param("userId") Integer userId);
-
     @Query("SELECT t FROM Task t WHERE t.id = :taskId AND t.project.manager.id = :managerId")
     Optional<Task> findByTaskIdAndManagerId(@Param("taskId") Integer taskId, @Param("managerId") Integer managerId);
+
+    @Query("SELECT t FROM Task t WHERE t.user.id = :userId")
+    Page<Task> findAllByUserId(@Param("userId") Integer userId, Pageable pageable);
+
+    @Query("SELECT t FROM Task t WHERE t.project.id = :projectId")
+    Page<Task> findAllByProjectIdAndPagination(@Param("projectId") Integer projectId, Pageable pageable);
 }

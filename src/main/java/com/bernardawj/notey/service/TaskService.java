@@ -15,7 +15,9 @@ public interface TaskService {
 
     TaskDTO getTask(Integer taskId, Integer userId) throws TaskServiceException;
 
-    List<TaskDTO> getAllUserTasks(Integer userId) throws TaskServiceException;
+    TaskListDTO getAllUserTasks(Integer userId, Integer pageNo, Integer pageSize) throws TaskServiceException;
+
+    TaskListDTO getAllProjectTasks(Integer projectId, Integer pageNo, Integer pageSize) throws TaskServiceException;
 
     TaskDTO updateTask(UpdateTaskDTO updateTaskDTO) throws TaskServiceException;
 

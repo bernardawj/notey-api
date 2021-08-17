@@ -16,6 +16,8 @@ This repository contains the API services that powers Notey.
 - Testing Frameworks
   - JUnit
   - Mockito
+- Database
+  - PostgreSQL
 - CI/CD
   - Git
   - Heroku

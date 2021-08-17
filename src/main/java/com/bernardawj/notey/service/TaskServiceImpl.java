@@ -1,6 +1,7 @@
 package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.project.ProjectDTO;
+import com.bernardawj.notey.dto.shared.PaginationDTO;
 import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
@@ -12,6 +13,7 @@ import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.TaskRepository;
 import com.bernardawj.notey.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -137,26 +139,23 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<TaskDTO> getAllUserTasks(Integer userId) throws TaskServiceException {
+    public TaskListDTO getAllUserTasks(Integer userId, Integer pageNo, Integer pageSize) throws TaskServiceException {
         // Get all tasks related to user from database
-        Iterable<Task> tasks = this.taskRepository.findAllByUserId(userId);
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        Page<Task> tasks = this.taskRepository.findAllByUserId(userId, pageable);
 
         // Populate it into DTO
-        List<TaskDTO> tasksDTO = new ArrayList<>();
-        tasks.forEach(task -> {
-            Project project = task.getProject();
+        return populateTaskListDTO(tasks, pageNo, tasks.getTotalPages());
+    }
 
-            ProjectDTO projectDTO = new ProjectDTO();
-            projectDTO.setId(project.getId());
-            projectDTO.setName(project.getName());
-            projectDTO.setDescription(project.getDescription());
+    @Override
+    public TaskListDTO getAllProjectTasks(Integer projectId, Integer pageNo, Integer pageSize) throws TaskServiceException {
+        // Retrieve all tasks based on project ID from database
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        Page<Task> tasks = this.taskRepository.findAllByProjectIdAndPagination(projectId, pageable);
 
-            TaskDTO taskDTO = new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(),
-                    task.getCompleted(), task.getStartAt(), task.getEndAt(), task.getCreatedAt(), projectDTO);
-            tasksDTO.add(taskDTO);
-        });
-
-        return tasksDTO;
+        // Populate it into DTO
+        return populateTaskListDTO(tasks, pageNo, tasks.getTotalPages());
     }
 
     @Override
@@ -192,5 +191,32 @@ public class TaskServiceImpl implements TaskService {
 
         // Delete from database
         this.taskRepository.deleteById(task.getId());
+    }
+
+    private TaskDTO populateTaskDTO(Task task) {
+        Project project = task.getProject();
+
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setId(project.getId());
+        projectDTO.setName(project.getName());
+        projectDTO.setDescription(project.getDescription());
+
+        return new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(), task.getCompleted(),
+                task.getStartAt(), task.getEndAt(), task.getCreatedAt(), projectDTO);
+    }
+
+    private List<TaskDTO> populateTasksDTO(Iterable<Task> tasks) {
+        List<TaskDTO> tasksDTO = new ArrayList<>();
+        tasks.forEach(task -> {
+            tasksDTO.add(populateTaskDTO(task));
+        });
+        return tasksDTO;
+    }
+
+    private TaskListDTO populateTaskListDTO(Iterable<Task> tasks, Integer pageNo, Integer totalPages) {
+        TaskListDTO taskListDTO = new TaskListDTO();
+        taskListDTO.setTasks(populateTasksDTO(tasks));
+        taskListDTO.setPagination(new PaginationDTO(pageNo, totalPages));
+        return taskListDTO;
     }
 }

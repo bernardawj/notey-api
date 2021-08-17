@@ -3,6 +3,7 @@ package com.bernardawj.notey.service;
 import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.*;
 import com.bernardawj.notey.dto.task.TaskDTO;
+import com.bernardawj.notey.dto.user.ProjectAcceptanceDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
@@ -14,6 +15,7 @@ import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.UserRepository;
+import com.bernardawj.notey.utility.ProjectUserCompositeKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -102,6 +104,26 @@ public class ProjectServiceImpl implements ProjectService {
         createNotificationDTO.setFromUserId(project.getManager().getId());
         createNotificationDTO.setToUserId(user.getId());
         this.notificationService.createNotification(createNotificationDTO);
+    }
+
+    @Override
+    public void updateProjectAcceptance(ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException {
+        // Check if user and project exists within the database
+        ProjectUserCompositeKey compositeKey = new ProjectUserCompositeKey(projectAcceptanceDTO.getProjectId(),
+                projectAcceptanceDTO.getUserId());
+        Optional<ProjectUser> optProjectUser =
+                this.projectUserRepository.findById(compositeKey);
+        ProjectUser projectUser = optProjectUser.orElseThrow(() -> new ProjectServiceException("ProjectService.NO_PROJECT_FOR_ACCEPTANCE"));
+
+        // Delete project user if declined
+        if (!projectAcceptanceDTO.getAccept()) {
+            this.projectUserRepository.deleteById(compositeKey);
+            return;
+        }
+
+        // Perform acceptance on project and update the database
+        projectUser.setHasAccepted(true);
+        this.projectUserRepository.save(projectUser);
     }
 
     @Override

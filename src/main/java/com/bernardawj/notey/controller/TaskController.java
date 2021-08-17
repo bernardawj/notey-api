@@ -46,10 +46,20 @@ public class TaskController {
         return new ResponseEntity<>(taskDTO, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/user/{userId}")
-    public ResponseEntity<List<TaskDTO>> getAllUserTasks(@PathVariable("userId") Integer userId) throws TaskServiceException {
-        List<TaskDTO> tasksDTO = this.taskService.getAllUserTasks(userId);
+    @GetMapping(path = "/user/{userId}/{pageNo}/{pageSize}")
+    public ResponseEntity<TaskListDTO> getAllUserTasks(@PathVariable("userId") Integer userId,
+                                                       @PathVariable("pageNo") Integer pageNo,
+                                                       @PathVariable("pageSize") Integer pageSize) throws TaskServiceException {
+        TaskListDTO tasksDTO = this.taskService.getAllUserTasks(userId, pageNo, pageSize);
         return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/project/{projectId}/{pageNo}/{pageSize}")
+    public ResponseEntity<TaskListDTO> getAllProjectTasks(@PathVariable("projectId") Integer projectId,
+                                                          @PathVariable("pageNo") Integer pageNo,
+                                                          @PathVariable("pageSize") Integer pageSize) throws TaskServiceException {
+        TaskListDTO taskListDTO = this.taskService.getAllProjectTasks(projectId, pageNo, pageSize);
+        return new ResponseEntity<>(taskListDTO, HttpStatus.OK);
     }
 
     @PutMapping()

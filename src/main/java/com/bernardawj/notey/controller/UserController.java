@@ -26,11 +26,4 @@ public class UserController {
         UserDTO userDTO = this.userService.getUserDetails(id);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
-
-    @PostMapping(path = "/project/acceptance")
-    public ResponseEntity<Void> updateProjectAcceptance(@RequestBody ProjectAcceptanceDTO projectAcceptanceDTO) throws UserServiceException {
-        this.userService.updateProjectAcceptance(projectAcceptanceDTO.getProjectId(),
-                projectAcceptanceDTO.getUserId(), projectAcceptanceDTO.getAccept());
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
 }

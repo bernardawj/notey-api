@@ -50,24 +50,4 @@ public class UserServiceImpl implements UserService {
         return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName(),
                 assignedProjects);
     }
-
-    @Override
-    public void updateProjectAcceptance(Integer projectId, Integer userId, Boolean accept) throws UserServiceException {
-        // Check if user and project exists within the database
-        ProjectUserCompositeKey compositeKey = new ProjectUserCompositeKey(projectId, userId);
-        Optional<ProjectUser> optProjectUser =
-                this.projectUserRepository.findById(compositeKey);
-        ProjectUser projectUser = optProjectUser.orElseThrow(() -> new UserServiceException("UserService" +
-                ".NO_PROJECT_FOR_ACCEPTANCE"));
-
-        // Delete project user if declined
-        if (!accept) {
-            this.projectUserRepository.deleteById(compositeKey);
-            return;
-        }
-
-        // Perform acceptance on project and update the database
-        projectUser.setHasAccepted(true);
-        this.projectUserRepository.save(projectUser);
-    }
 }
