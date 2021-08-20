@@ -2,17 +2,17 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.project.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.task.*;
+import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.TaskServiceException;
-
-import java.util.List;
 
 public interface TaskService {
 
     TaskDTO createTask(CreateTaskDTO createTaskDTO) throws TaskServiceException;
 
-    void assignTaskToUser(AssignTaskDTO assignTaskDTO) throws TaskServiceException;
+    void assignTaskToUser(AssignTaskDTO assignTaskDTO) throws TaskServiceException, NotificationServiceException;
 
-    void markTaskAsCompleted(MarkTaskCompletionDTO markTaskCompletionDTO) throws TaskServiceException;
+    void markTaskAsCompleted(MarkTaskCompletionDTO markTaskCompletionDTO) throws TaskServiceException,
+            NotificationServiceException;
 
     TaskDTO getTask(Integer taskId, Integer userId) throws TaskServiceException;
 

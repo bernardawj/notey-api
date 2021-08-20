@@ -56,7 +56,7 @@ public class ProjectController {
     }
 
     @PostMapping(path = "/acceptance")
-    public ResponseEntity<Void> updateProjectAcceptance(@RequestBody ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException {
+    public ResponseEntity<Void> updateProjectAcceptance(@RequestBody ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException, NotificationServiceException {
         this.projectService.updateProjectAcceptance(projectAcceptanceDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

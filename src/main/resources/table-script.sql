@@ -67,5 +67,8 @@ CREATE TABLE notifications
     CONSTRAINT notifications_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT notifications_from_user_id_fk FOREIGN KEY (from_user_id) REFERENCES users (id),
     CONSTRAINT notifications_max_message_length_check CHECK (length(message) <= 100),
-    CONSTRAINT notifications_type_check CHECK (type IN ('PROJECT_INVITATION', 'PROJECT_REMOVAL', 'TASK_ALLOCATION', 'TASK_ALLOCATION_REMOVAL'))
+    CONSTRAINT notifications_type_check CHECK (type IN ('PROJECT_INVITATION', 'PROJECT_REMOVAL', 'PROJECT_ACCEPTANCE',
+                                                        'PROJECT_REJECTION', 'TASK_ALLOCATION',
+                                                        'TASK_ALLOCATION_REMOVAL',
+                                                        'TASK_MARK_COMPLETED', 'TASK_MARK_INCOMPLETE'))
 );

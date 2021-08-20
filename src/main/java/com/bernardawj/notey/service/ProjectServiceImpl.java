@@ -16,7 +16,6 @@ import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.ProjectUserRepository;
-import com.bernardawj.notey.repository.TaskRepository;
 import com.bernardawj.notey.repository.UserRepository;
 import com.bernardawj.notey.utility.ProjectUserCompositeKey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,6 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ProjectUserRepository projectUserRepository;
-    private final TaskRepository taskRepository;
     private final UserService userService;
     private final NotificationService notificationService;
 
@@ -49,12 +47,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     public ProjectServiceImpl(ProjectRepository projectRepository, UserRepository userRepository,
-                              ProjectUserRepository projectUserRepository, TaskRepository taskRepository,
-                              UserService userService, NotificationService notificationService) {
+                              ProjectUserRepository projectUserRepository, UserService userService,
+                              NotificationService notificationService) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.projectUserRepository = projectUserRepository;
-        this.taskRepository = taskRepository;
         this.userService = userService;
         this.notificationService = notificationService;
     }
@@ -117,14 +114,10 @@ public class ProjectServiceImpl implements ProjectService {
         this.projectRepository.save(project);
 
         // Create notification and save to database
-        CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
-        createNotificationDTO.setMessage(String.format("Project (%s) has been assigned to you by %s %s.",
-                project.getName(),
-                project.getManager().getFirstName(), project.getManager().getLastName()));
-        createNotificationDTO.setType(NotificationType.PROJECT_INVITATION);
-        createNotificationDTO.setFromUserId(project.getManager().getId());
-        createNotificationDTO.setToUserId(user.getId());
-        this.notificationService.createNotification(createNotificationDTO);
+        User manager = project.getManager();
+        this.notificationService.createNotification(CreateNotificationDTO.notificationBuilder(project.getName(),
+                manager.getFirstName() + " " + manager.getLastName(), NotificationType.PROJECT_INVITATION,
+                manager.getId(), user.getId()));
     }
 
     @Override
@@ -154,18 +147,16 @@ public class ProjectServiceImpl implements ProjectService {
                 projectUser.getUserId()));
 
         // Create notification
-        CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
-        createNotificationDTO.setMessage(String.format("You have been removed from Project (%s) by %s %s.",
-                projectUser.getProject().getName(), projectUser.getProject().getManager().getFirstName(),
-                projectUser.getProject().getManager().getLastName()));
-        createNotificationDTO.setType(NotificationType.PROJECT_REMOVAL);
-        createNotificationDTO.setFromUserId(projectUser.getProject().getManager().getId());
-        createNotificationDTO.setToUserId(projectUser.getUser().getId());
-        this.notificationService.createNotification(createNotificationDTO);
+        Project project = projectUser.getProject();
+        User manager = projectUser.getProject().getManager();
+        this.notificationService.createNotification(CreateNotificationDTO.notificationBuilder(project.getName(),
+                manager.getFirstName() + " " + manager.getLastName(), NotificationType.PROJECT_REMOVAL,
+                manager.getId(), projectUser.getUserId()));
     }
 
     @Override
-    public void updateProjectAcceptance(ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException {
+    public void updateProjectAcceptance(ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException,
+            NotificationServiceException {
         // Check if user and project exists within the database
         ProjectUserCompositeKey compositeKey = new ProjectUserCompositeKey(projectAcceptanceDTO.getProjectId(),
                 projectAcceptanceDTO.getUserId());
@@ -174,15 +165,30 @@ public class ProjectServiceImpl implements ProjectService {
         ProjectUser projectUser = optProjectUser.orElseThrow(() -> new ProjectServiceException("ProjectService" +
                 ".NO_PROJECT_FOR_ACCEPTANCE"));
 
-        // Delete project user if declined
-        if (!projectAcceptanceDTO.getAccept()) {
+        if (projectAcceptanceDTO.getAccept()) {
+            // Perform acceptance on project and update the database
+            projectUser.setHasAccepted(true);
+            this.projectUserRepository.save(projectUser);
+        } else {
+            // Delete project user if declined
             this.projectUserRepository.deleteById(compositeKey);
-            return;
         }
 
-        // Perform acceptance on project and update the database
-        projectUser.setHasAccepted(true);
-        this.projectUserRepository.save(projectUser);
+        // Create notification
+        Project project = projectUser.getProject();
+        User user = projectUser.getUser();
+        User manager = projectUser.getProject().getManager();
+
+        CreateNotificationDTO createNotificationDTO;
+        if (projectUser.getHasAccepted()) {
+            createNotificationDTO = CreateNotificationDTO.notificationBuilder(project.getName(),
+                    user.getFullName(), NotificationType.PROJECT_ACCEPTANCE, projectUser.getUserId(), manager.getId());
+        } else {
+            createNotificationDTO = CreateNotificationDTO.notificationBuilder(project.getName(),
+                    user.getFullName(), NotificationType.PROJECT_REJECTION, projectUser.getUserId(), manager.getId());
+        }
+
+        this.notificationService.createNotification(createNotificationDTO);
     }
 
     @Override

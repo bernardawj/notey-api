@@ -18,7 +18,8 @@ public interface ProjectService {
     void removeUserFromProject(RemoveProjectAssignmentDTO removeProjectAssignmentDTO) throws ProjectServiceException,
             NotificationServiceException;
 
-    void updateProjectAcceptance(ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException;
+    void updateProjectAcceptance(ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException,
+            NotificationServiceException;
 
     ProjectDTO getProject(Integer projectId, Integer userId) throws ProjectServiceException;
 

@@ -2,14 +2,13 @@ package com.bernardawj.notey.controller;
 
 import com.bernardawj.notey.dto.project.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.task.*;
+import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/task")
@@ -29,13 +28,14 @@ public class TaskController {
     }
 
     @PostMapping(path = "/assign")
-    public ResponseEntity<Void> assignTaskToUser(@RequestBody AssignTaskDTO assignTaskDTO) throws TaskServiceException {
+    public ResponseEntity<Void> assignTaskToUser(@RequestBody AssignTaskDTO assignTaskDTO) throws TaskServiceException, NotificationServiceException {
         this.taskService.assignTaskToUser(assignTaskDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(path = "/mark-completion")
-    public ResponseEntity<Void> markTaskAsCompleted(@RequestBody MarkTaskCompletionDTO markTaskCompletionDTO) throws TaskServiceException {
+    public ResponseEntity<Void> markTaskAsCompleted(@RequestBody MarkTaskCompletionDTO markTaskCompletionDTO)
+            throws TaskServiceException, NotificationServiceException {
         this.taskService.markTaskAsCompleted(markTaskCompletionDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -68,7 +68,8 @@ public class TaskController {
     }
 
     @DeleteMapping(path = "/{taskId}/{managerId}")
-    public ResponseEntity<Void> deleteTask(@PathVariable("taskId") Integer taskId, @PathVariable("managerId") Integer managerId) throws TaskServiceException {
+    public ResponseEntity<Void> deleteTask(@PathVariable("taskId") Integer taskId,
+                                           @PathVariable("managerId") Integer managerId) throws TaskServiceException {
         this.taskService.deleteTask(taskId, managerId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

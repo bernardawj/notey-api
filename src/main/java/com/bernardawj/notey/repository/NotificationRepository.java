@@ -13,6 +13,6 @@ public interface NotificationRepository extends CrudRepository<Notification, Int
     Optional<Notification> findByNotificationIdAndUserId(@Param("notificationId") Integer notificationId, @Param(
             "toUserId") Integer toUserId);
 
-    @Query("SELECT n FROM Notification n WHERE n.user.id = :userId")
+    @Query("SELECT n FROM Notification n WHERE n.user.id = :userId ORDER BY n.createdAt DESC")
     Iterable<Notification> findAllByUserId(@Param("userId") Integer userId);
 }

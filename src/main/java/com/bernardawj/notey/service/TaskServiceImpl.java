@@ -1,5 +1,6 @@
 package com.bernardawj.notey.service;
 
+import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.project.ProjectUserDTO;
@@ -10,11 +11,13 @@ import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
+import com.bernardawj.notey.entity.User;
+import com.bernardawj.notey.enums.NotificationType;
+import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.TaskRepository;
-import com.bernardawj.notey.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,23 +38,21 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
     private final ProjectUserRepository projectUserRepository;
+    private final NotificationService notificationService;
 
     private final String TASK_NOT_FOUND = "TaskService.TASK_NOT_FOUND";
-    private final String TASK_NOT_UNDER_USER = "TaskService.TASK_NOT_UNDER_USER";
-    private final String USER_NOT_FOUND = "TaskService.USER_NOT_FOUND";
     private final String USER_NOT_PART_OF_PROJECT = "TaskService.USER_NOT_PART_OF_PROJECT";
     private final String NOT_MATCHING_MANAGER = "TaskService.NOT_MATCHING_MANAGER";
     private final String INVALID_UNASSIGNMENT = "TaskService.INVALID_UNASSIGNMENT";
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository,
-                           UserRepository userRepository, ProjectUserRepository projectUserRepository) {
+                           ProjectUserRepository projectUserRepository, NotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
-        this.userRepository = userRepository;
         this.projectUserRepository = projectUserRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -83,7 +84,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void assignTaskToUser(AssignTaskDTO assignTaskDTO) throws TaskServiceException {
+    public void assignTaskToUser(AssignTaskDTO assignTaskDTO) throws TaskServiceException,
+            NotificationServiceException {
         // Check if task exists within the database
         Optional<Task> optTask = this.taskRepository.findById(assignTaskDTO.getTaskId());
         Task task = optTask.orElseThrow(() -> new TaskServiceException(TASK_NOT_FOUND));
@@ -111,10 +113,26 @@ public class TaskServiceImpl implements TaskService {
 
         // Save to database
         this.taskRepository.save(task);
+
+        // Create notification
+        User manager = task.getProject().getManager();
+
+        CreateNotificationDTO createNotificationDTO;
+        if (assignTaskDTO.getAssign()) {
+            createNotificationDTO = CreateNotificationDTO.notificationBuilder(task.getName(),
+                    manager.getFullName(), NotificationType.TASK_ALLOCATION, manager.getId(), projectUser.getUserId());
+        } else {
+            createNotificationDTO = CreateNotificationDTO.notificationBuilder(task.getName(),
+                    manager.getFullName(), NotificationType.TASK_ALLOCATION_REMOVAL, manager.getId(),
+                    projectUser.getUserId());
+        }
+
+        this.notificationService.createNotification(createNotificationDTO);
     }
 
     @Override
-    public void markTaskAsCompleted(MarkTaskCompletionDTO markTaskCompletionDTO) throws TaskServiceException {
+    public void markTaskAsCompleted(MarkTaskCompletionDTO markTaskCompletionDTO) throws TaskServiceException,
+            NotificationServiceException {
         // Check if task exists within the database
         Optional<Task> optTask = this.taskRepository.findByTaskIdAndUserId(markTaskCompletionDTO.getTaskId(),
                 markTaskCompletionDTO.getUserId());
@@ -123,6 +141,21 @@ public class TaskServiceImpl implements TaskService {
         // Update task completion and save to database
         task.setCompleted(markTaskCompletionDTO.getComplete());
         this.taskRepository.save(task);
+
+        // Create notification
+        User user = task.getUser();
+        User manager = task.getProject().getManager();
+
+        CreateNotificationDTO createNotificationDTO;
+        if (markTaskCompletionDTO.getComplete()) {
+            createNotificationDTO = CreateNotificationDTO.notificationBuilder(task.getName(),
+                    user.getFullName(), NotificationType.TASK_MARK_COMPLETED, user.getId(), manager.getId());
+        } else {
+            createNotificationDTO = CreateNotificationDTO.notificationBuilder(task.getName(),
+                    user.getFullName(), NotificationType.TASK_MARK_INCOMPLETE, user.getId(), manager.getId());
+        }
+
+        this.notificationService.createNotification(createNotificationDTO);
     }
 
     @Override
@@ -165,7 +198,7 @@ public class TaskServiceImpl implements TaskService {
         } else if (taskFilter.getType() != null) {
             tasks = this.taskRepository.findAllByProjectIdAndPaginationAndType(getProjectTasksDTO.getProjectId(),
                     taskFilter.getSearchString(), taskFilter.getType(), pageable);
-        }  else if (taskFilter.getCompleted() != null) {
+        } else if (taskFilter.getCompleted() != null) {
             tasks = this.taskRepository.findAllByProjectIdAndPaginationAndCompleted(getProjectTasksDTO.getProjectId(),
                     taskFilter.getSearchString(), taskFilter.getCompleted(), pageable);
         } else {
