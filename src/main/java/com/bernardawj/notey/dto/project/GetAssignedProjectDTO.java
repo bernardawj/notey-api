@@ -6,21 +6,21 @@ import com.bernardawj.notey.dto.shared.InputPageDTO;
 
 public class GetAssignedProjectDTO extends BaseListDTO<FilterDTO> {
 
-    private int userId;
+    private Integer userId;
 
     public GetAssignedProjectDTO() {
     }
 
-    public GetAssignedProjectDTO(int userId, FilterDTO filter, InputPageDTO inputPage) {
-        super(filter, inputPage);
+    public GetAssignedProjectDTO(FilterDTO filterDTO, InputPageDTO inputPage, Integer userId) {
+        super(filterDTO, inputPage);
         this.userId = userId;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 }

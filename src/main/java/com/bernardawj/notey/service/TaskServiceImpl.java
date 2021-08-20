@@ -1,7 +1,7 @@
 package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
-import com.bernardawj.notey.dto.project.GetProjectTasksDTO;
+import com.bernardawj.notey.dto.task.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.project.ProjectUserDTO;
 import com.bernardawj.notey.dto.shared.PaginationDTO;
@@ -175,13 +175,29 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskListDTO getAllUserTasks(Integer userId, Integer pageNo, Integer pageSize) throws TaskServiceException {
+    public TaskListDTO getAllUserTasks(GetUserTasksDTO getUserTasksDTO) {
         // Get all tasks related to user from database
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("createdAt").descending());
-        Page<Task> tasks = this.taskRepository.findAllByUserId(userId, pageable);
+        Pageable pageable = PageRequest.of(getUserTasksDTO.getInputPage().getPageNo() - 1,
+                getUserTasksDTO.getInputPage().getPageSize(), Sort.by("createdAt").descending());
+
+        TaskFilterDTO taskFilter = getUserTasksDTO.getFilter();
+        Page<Task> tasks;
+        if (taskFilter.getType() != null && taskFilter.getCompleted() != null) {
+            tasks = this.taskRepository.findAllByUserIdAndPaginationAndTypeOrCompleted(getUserTasksDTO.getUserId(),
+                    taskFilter.getSearchString(), taskFilter.getType(), taskFilter.getCompleted(), pageable);
+        } else if (taskFilter.getType() != null) {
+            tasks = this.taskRepository.findAllByUserIdAndPaginationAndType(getUserTasksDTO.getUserId(),
+                    taskFilter.getSearchString(), taskFilter.getType(), pageable);
+        } else if (taskFilter.getCompleted() != null) {
+            tasks = this.taskRepository.findAllByUserIdAndPaginationAndCompleted(getUserTasksDTO.getUserId(),
+                    taskFilter.getSearchString(), taskFilter.getCompleted(), pageable);
+        } else {
+            tasks = this.taskRepository.findAllByUserIdAndPagination(getUserTasksDTO.getUserId(),
+                    getUserTasksDTO.getFilter().getSearchString(), pageable);
+        }
 
         // Populate it into DTO
-        return populateTaskListDTO(tasks, pageNo, tasks.getTotalPages());
+        return populateTaskListDTO(tasks, getUserTasksDTO.getInputPage().getPageNo(), tasks.getTotalPages());
     }
 
     @Override

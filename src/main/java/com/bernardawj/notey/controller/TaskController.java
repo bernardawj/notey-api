@@ -1,6 +1,6 @@
 package com.bernardawj.notey.controller;
 
-import com.bernardawj.notey.dto.project.GetProjectTasksDTO;
+import com.bernardawj.notey.dto.task.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.TaskServiceException;
@@ -47,16 +47,14 @@ public class TaskController {
         return new ResponseEntity<>(taskDTO, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/user/{userId}/{pageNo}/{pageSize}")
-    public ResponseEntity<TaskListDTO> getAllUserTasks(@PathVariable("userId") Integer userId,
-                                                       @PathVariable("pageNo") Integer pageNo,
-                                                       @PathVariable("pageSize") Integer pageSize) throws TaskServiceException {
-        TaskListDTO tasksDTO = this.taskService.getAllUserTasks(userId, pageNo, pageSize);
+    @PostMapping(path = "/user")
+    public ResponseEntity<TaskListDTO> getAllUserTasks(@RequestBody GetUserTasksDTO getUserTasksDTO) {
+        TaskListDTO tasksDTO = this.taskService.getAllUserTasks(getUserTasksDTO);
         return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
     }
 
     @PostMapping(path = "/project")
-    public ResponseEntity<TaskListDTO> getAllProjectTasks(@RequestBody GetProjectTasksDTO getProjectTasksDTO) throws TaskServiceException {
+    public ResponseEntity<TaskListDTO> getAllProjectTasks(@RequestBody GetProjectTasksDTO getProjectTasksDTO) {
         TaskListDTO taskListDTO = this.taskService.getAllProjectTasks(getProjectTasksDTO);
         return new ResponseEntity<>(taskListDTO, HttpStatus.OK);
     }

@@ -1,6 +1,6 @@
 package com.bernardawj.notey.service;
 
-import com.bernardawj.notey.dto.project.GetProjectTasksDTO;
+import com.bernardawj.notey.dto.task.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.TaskServiceException;
@@ -16,9 +16,9 @@ public interface TaskService {
 
     TaskDTO getTask(Integer taskId, Integer userId) throws TaskServiceException;
 
-    TaskListDTO getAllUserTasks(Integer userId, Integer pageNo, Integer pageSize) throws TaskServiceException;
+    TaskListDTO getAllUserTasks(GetUserTasksDTO getUserTasksDTO);
 
-    TaskListDTO getAllProjectTasks(GetProjectTasksDTO getProjectTasksDTO) throws TaskServiceException;
+    TaskListDTO getAllProjectTasks(GetProjectTasksDTO getProjectTasksDTO);
 
     TaskDTO updateTask(UpdateTaskDTO updateTaskDTO) throws TaskServiceException;
 

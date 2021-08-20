@@ -6,21 +6,21 @@ import com.bernardawj.notey.dto.shared.InputPageDTO;
 
 public class GetManagedProjectDTO extends BaseListDTO<FilterDTO> {
 
-    private int managerId;
+    private Integer managerId;
 
     public GetManagedProjectDTO() {
     }
 
-    public GetManagedProjectDTO(int managerId, FilterDTO filter, InputPageDTO inputPage) {
-        super(filter, inputPage);
+    public GetManagedProjectDTO(FilterDTO filterDTO, InputPageDTO inputPage, Integer managerId) {
+        super(filterDTO, inputPage);
         this.managerId = managerId;
     }
 
-    public int getManagerId() {
+    public Integer getManagerId() {
         return managerId;
     }
 
-    public void setManagerId(int managerId) {
+    public void setManagerId(Integer managerId) {
         this.managerId = managerId;
     }
 }
