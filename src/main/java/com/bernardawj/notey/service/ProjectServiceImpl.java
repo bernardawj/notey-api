@@ -4,7 +4,7 @@ import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.*;
 import com.bernardawj.notey.dto.shared.PaginationDTO;
 import com.bernardawj.notey.dto.task.TaskDTO;
-import com.bernardawj.notey.dto.user.ProjectAcceptanceDTO;
+import com.bernardawj.notey.dto.project.ProjectAcceptanceDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;

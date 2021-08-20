@@ -1,7 +1,5 @@
 package com.bernardawj.notey.dto.project;
 
-import org.springframework.validation.annotation.Validated;
-
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 

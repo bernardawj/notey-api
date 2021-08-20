@@ -1,7 +1,7 @@
 package com.bernardawj.notey.controller;
 
 import com.bernardawj.notey.dto.project.*;
-import com.bernardawj.notey.dto.user.ProjectAcceptanceDTO;
+import com.bernardawj.notey.dto.project.ProjectAcceptanceDTO;
 import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @CrossOrigin

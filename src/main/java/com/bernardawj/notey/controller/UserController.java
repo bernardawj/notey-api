@@ -1,7 +1,6 @@
 package com.bernardawj.notey.controller;
 
 import com.bernardawj.notey.dto.user.UserDTO;
-import com.bernardawj.notey.dto.user.ProjectAcceptanceDTO;
 import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,6 @@
 package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
-import com.bernardawj.notey.dto.task.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.project.ProjectUserDTO;
 import com.bernardawj.notey.dto.shared.PaginationDTO;

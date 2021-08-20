@@ -1,8 +1,10 @@
 package com.bernardawj.notey.controller;
 
+import com.bernardawj.notey.dto.auth.AuthDTO;
 import com.bernardawj.notey.dto.auth.LoginDTO;
-import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.dto.auth.RegisterDTO;
+import com.bernardawj.notey.dto.auth.TokenDTO;
+import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.exception.AuthServiceException;
 import com.bernardawj.notey.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,9 @@ public class AuthController {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<UserDTO> login(@RequestBody LoginDTO loginDTO) throws AuthServiceException {
-        UserDTO userDTO = this.authService.login(loginDTO);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    public ResponseEntity<AuthDTO> login(@RequestBody LoginDTO loginDTO) throws AuthServiceException {
+        AuthDTO authDTO = this.authService.generateAuthenticationToken(loginDTO);
+        return new ResponseEntity<>(authDTO, HttpStatus.OK);
     }
 
     @PostMapping(path = "/register")

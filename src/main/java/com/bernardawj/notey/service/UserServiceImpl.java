@@ -4,7 +4,6 @@ import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.UserServiceException;
-import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
