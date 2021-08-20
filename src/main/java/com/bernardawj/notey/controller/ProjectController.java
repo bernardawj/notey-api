@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -28,24 +27,31 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    @GetMapping(path = "/managed/{managerId}")
-    public ResponseEntity<List<ProjectDTO>> getAllManagedProjects(@PathVariable("managerId") Integer managerId)
+    @PostMapping(path = "/managed")
+    public ResponseEntity<ProjectListDTO> getAllManagedProjects(@RequestBody GetManagedProjectDTO getManagedProjectDTO)
             throws UserServiceException {
-        List<ProjectDTO> projectsDTO = this.projectService.getAllManagedProjects(managerId);
-        return new ResponseEntity<>(projectsDTO, HttpStatus.OK);
+        ProjectListDTO projectListDTO = this.projectService.getAllManagedProjects(getManagedProjectDTO);
+        return new ResponseEntity<>(projectListDTO, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/assigned/{userId}")
-    public ResponseEntity<List<ProjectDTO>> getAllAssignedProjects(@PathVariable("userId") Integer userId)
+    @PostMapping(path = "/assigned")
+    public ResponseEntity<ProjectListDTO> getAllAssignedProjects(@RequestBody GetAssignedProjectDTO getAssignedProjectDTO)
             throws UserServiceException {
-        List<ProjectDTO> projectsDTO = this.projectService.getAllAssignedProjects(userId);
-        return new ResponseEntity<>(projectsDTO, HttpStatus.OK);
+        ProjectListDTO projectListDTO = this.projectService.getAllAssignedProjects(getAssignedProjectDTO);
+        return new ResponseEntity<>(projectListDTO, HttpStatus.OK);
     }
 
     @PostMapping(path = "/assign")
     public ResponseEntity<Void> assignUserToProject(@RequestBody AssignProjectDTO assignProjectDTO)
             throws ProjectServiceException, NotificationServiceException {
         this.projectService.assignUserToProject(assignProjectDTO);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping(path = "/remove-assignment")
+    public ResponseEntity<Void> removeUserFromProject(@RequestBody RemoveProjectAssignmentDTO removeProjectAssignmentDTO)
+            throws ProjectServiceException, NotificationServiceException {
+        this.projectService.removeUserFromProject(removeProjectAssignmentDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -76,9 +82,10 @@ public class ProjectController {
         return new ResponseEntity<>(updatedProjectDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping()
-    public ResponseEntity<Void> deleteProject(@RequestBody DeleteProjectDTO deleteProjectDTO) throws ProjectServiceException {
-        this.projectService.deleteProject(deleteProjectDTO);
+    @DeleteMapping(path = "/{projectId}/{managerId}")
+    public ResponseEntity<Void> deleteProject(@PathVariable("projectId") Integer projectId,
+                                              @PathVariable("managerId") Integer managerId) throws ProjectServiceException {
+        this.projectService.deleteProject(projectId, managerId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

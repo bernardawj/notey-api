@@ -3,7 +3,6 @@ package com.bernardawj.notey.service;
 import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.AssignProjectDTO;
 import com.bernardawj.notey.dto.project.CreateProjectDTO;
-import com.bernardawj.notey.dto.project.DeleteProjectDTO;
 import com.bernardawj.notey.dto.project.UpdateProjectDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
@@ -266,16 +265,13 @@ public class ProjectServiceTests {
 
     @Test
     public void invalidProjectIdAndManagerIdOnDeleteProjectShouldThrowException() {
-        // Mock DTO
-        DeleteProjectDTO deleteProjectDTO = new DeleteProjectDTO(1, 1);
-
         // Mock the behavior of repository
         Mockito.when(this.projectRepository.findProjectByProjectIdAndManagerId(Mockito.anyInt(),
                 Mockito.anyInt())).thenReturn(Optional.empty());
 
         // Check if method indeed throws an exception
         ProjectServiceException ex = Assertions.assertThrows(ProjectServiceException.class,
-                () -> this.projectService.deleteProject(deleteProjectDTO));
+                () -> this.projectService.deleteProject(1, 1));
 
         // Check if exception message is the same
         Assertions.assertEquals("ProjectService.PROJECT_NOT_FOUND", ex.getMessage());

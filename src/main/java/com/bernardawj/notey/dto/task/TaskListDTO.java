@@ -1,7 +1,6 @@
 package com.bernardawj.notey.dto.task;
 
 import com.bernardawj.notey.dto.shared.PaginationDTO;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 

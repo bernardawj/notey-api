@@ -20,13 +20,6 @@ public class ProjectUser {
 
     private Boolean hasAccepted;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumns({
-            @JoinColumn(name = "user_id"),
-            @JoinColumn(name = "project_id")
-    })
-    private List<Task> tasks;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", unique = true, insertable = false, updatable = false)
     private Project project;
@@ -42,7 +35,6 @@ public class ProjectUser {
         this.projectId = projectId;
         this.userId = userId;
         this.hasAccepted = hasAccepted;
-        this.tasks = tasks;
     }
 
     public Integer getProjectId() {
@@ -67,14 +59,6 @@ public class ProjectUser {
 
     public void setHasAccepted(Boolean hasAccepted) {
         this.hasAccepted = hasAccepted;
-    }
-
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
     }
 
     public Project getProject() {

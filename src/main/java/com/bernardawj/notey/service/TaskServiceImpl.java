@@ -1,7 +1,10 @@
 package com.bernardawj.notey.service;
 
+import com.bernardawj.notey.dto.project.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
+import com.bernardawj.notey.dto.project.ProjectUserDTO;
 import com.bernardawj.notey.dto.shared.PaginationDTO;
+import com.bernardawj.notey.dto.shared.filter.TaskFilterDTO;
 import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -129,19 +133,18 @@ public class TaskServiceImpl implements TaskService {
 
         // Check if user belongs to the project
         boolean isProjectUser = task.getProject().getProjectUsers().stream().anyMatch(projectUser ->
-                projectUser.getUserId().intValue() == userId.intValue());
+                projectUser.getUserId().intValue() == userId.intValue()) || task.getProject().getManager().getId().intValue() == userId.intValue();
         if (!isProjectUser)
             throw new TaskServiceException(USER_NOT_PART_OF_PROJECT);
 
         // Return DTO
-        return new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(), task.getCompleted(),
-                task.getStartAt(), task.getEndAt(), task.getCreatedAt());
+        return populateTaskDTO(task);
     }
 
     @Override
     public TaskListDTO getAllUserTasks(Integer userId, Integer pageNo, Integer pageSize) throws TaskServiceException {
         // Get all tasks related to user from database
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("createdAt").descending());
         Page<Task> tasks = this.taskRepository.findAllByUserId(userId, pageable);
 
         // Populate it into DTO
@@ -149,13 +152,29 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskListDTO getAllProjectTasks(Integer projectId, Integer pageNo, Integer pageSize) throws TaskServiceException {
+    public TaskListDTO getAllProjectTasks(GetProjectTasksDTO getProjectTasksDTO) {
         // Retrieve all tasks based on project ID from database
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        Page<Task> tasks = this.taskRepository.findAllByProjectIdAndPagination(projectId, pageable);
+        Pageable pageable = PageRequest.of(getProjectTasksDTO.getInputPage().getPageNo() - 1,
+                getProjectTasksDTO.getInputPage().getPageSize(), Sort.by("createdAt").descending());
 
-        // Populate it into DTO
-        return populateTaskListDTO(tasks, pageNo, tasks.getTotalPages());
+        TaskFilterDTO taskFilter = getProjectTasksDTO.getFilter();
+        Page<Task> tasks;
+        if (taskFilter.getType() != null && taskFilter.getCompleted() != null) {
+            tasks = this.taskRepository.findAllByProjectIdAndPaginationAndTypeOrCompleted(getProjectTasksDTO.getProjectId(),
+                    taskFilter.getSearchString(), taskFilter.getType(), taskFilter.getCompleted(), pageable);
+        } else if (taskFilter.getType() != null) {
+            tasks = this.taskRepository.findAllByProjectIdAndPaginationAndType(getProjectTasksDTO.getProjectId(),
+                    taskFilter.getSearchString(), taskFilter.getType(), pageable);
+        }  else if (taskFilter.getCompleted() != null) {
+            tasks = this.taskRepository.findAllByProjectIdAndPaginationAndCompleted(getProjectTasksDTO.getProjectId(),
+                    taskFilter.getSearchString(), taskFilter.getCompleted(), pageable);
+        } else {
+            tasks = this.taskRepository.findAllByProjectIdAndPagination(getProjectTasksDTO.getProjectId(),
+                    getProjectTasksDTO.getFilter().getSearchString(), pageable);
+        }
+
+        // Populate it into DTO'
+        return populateTaskListDTO(tasks, getProjectTasksDTO.getInputPage().getPageNo(), tasks.getTotalPages());
     }
 
     @Override
@@ -178,15 +197,13 @@ public class TaskServiceImpl implements TaskService {
         this.taskRepository.save(task);
 
         // Return DTO
-        return new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(), task.getCompleted(),
-                task.getStartAt(), task.getEndAt(), task.getCreatedAt());
+        return populateTaskDTO(task);
     }
 
     @Override
-    public void deleteTask(DeleteTaskDTO deleteTaskDTO) throws TaskServiceException {
+    public void deleteTask(Integer taskId, Integer managerId) throws TaskServiceException {
         // Check if tasks exists within the database
-        Optional<Task> optTask = this.taskRepository.findByTaskIdAndManagerId(deleteTaskDTO.getTaskId(),
-                deleteTaskDTO.getManagerId());
+        Optional<Task> optTask = this.taskRepository.findByTaskIdAndManagerId(taskId, managerId);
         Task task = optTask.orElseThrow(() -> new TaskServiceException(TASK_NOT_FOUND));
 
         // Delete from database
@@ -201,8 +218,31 @@ public class TaskServiceImpl implements TaskService {
         projectDTO.setName(project.getName());
         projectDTO.setDescription(project.getDescription());
 
-        return new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(), task.getCompleted(),
-                task.getStartAt(), task.getEndAt(), task.getCreatedAt(), projectDTO);
+        // Populate project users
+        List<ProjectUserDTO> projectUsersDTO = new ArrayList<>();
+        project.getProjectUsers().forEach(assignedUser -> {
+            projectUsersDTO.add(new ProjectUserDTO(assignedUser.getUser().getId(), assignedUser.getUser().getEmail(),
+                    assignedUser.getUser().getFirstName(), assignedUser.getUser().getLastName(),
+                    assignedUser.getHasAccepted()));
+        });
+        projectDTO.setAssignedUsers(projectUsersDTO);
+
+        // Populate task
+        TaskDTO taskDTO = new TaskDTO(task.getId(), task.getName(), task.getDescription(), task.getType(),
+                task.getCompleted(),
+                task.getStartAt(), task.getEndAt(), task.getCreatedAt(), projectDTO, null);
+
+        // Populate user
+        if (task.getUser() != null) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(task.getUser().getId());
+            userDTO.setEmail(task.getUser().getEmail());
+            userDTO.setFirstName(task.getUser().getFirstName());
+            userDTO.setLastName(task.getUser().getLastName());
+            taskDTO.setUser(userDTO);
+        }
+
+        return taskDTO;
     }
 
     private List<TaskDTO> populateTasksDTO(Iterable<Task> tasks) {

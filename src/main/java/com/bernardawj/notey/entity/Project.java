@@ -17,17 +17,17 @@ public class Project {
     private LocalDateTime startAt;
     private LocalDateTime endAt;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_id", updatable = false)
+    private List<Task> tasks;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_id", updatable = false)
+    private List<ProjectUser> projectUsers;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", unique = true)
     private User manager;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "project_id", unique = true)
-    private List<ProjectUser> projectUsers;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "project_id")
-    private List<Task> tasks;
 
     public Project() {
     }

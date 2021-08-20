@@ -1,5 +1,6 @@
 package com.bernardawj.notey.controller;
 
+import com.bernardawj.notey.dto.project.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.service.TaskService;
@@ -54,11 +55,9 @@ public class TaskController {
         return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/project/{projectId}/{pageNo}/{pageSize}")
-    public ResponseEntity<TaskListDTO> getAllProjectTasks(@PathVariable("projectId") Integer projectId,
-                                                          @PathVariable("pageNo") Integer pageNo,
-                                                          @PathVariable("pageSize") Integer pageSize) throws TaskServiceException {
-        TaskListDTO taskListDTO = this.taskService.getAllProjectTasks(projectId, pageNo, pageSize);
+    @PostMapping(path = "/project")
+    public ResponseEntity<TaskListDTO> getAllProjectTasks(@RequestBody GetProjectTasksDTO getProjectTasksDTO) throws TaskServiceException {
+        TaskListDTO taskListDTO = this.taskService.getAllProjectTasks(getProjectTasksDTO);
         return new ResponseEntity<>(taskListDTO, HttpStatus.OK);
     }
 
@@ -68,9 +67,9 @@ public class TaskController {
         return new ResponseEntity<>(taskDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping()
-    public ResponseEntity<Void> deleteTask(@RequestBody DeleteTaskDTO deleteTaskDTO) throws TaskServiceException {
-        this.taskService.deleteTask(deleteTaskDTO);
+    @DeleteMapping(path = "/{taskId}/{managerId}")
+    public ResponseEntity<Void> deleteTask(@PathVariable("taskId") Integer taskId, @PathVariable("managerId") Integer managerId) throws TaskServiceException {
+        this.taskService.deleteTask(taskId, managerId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

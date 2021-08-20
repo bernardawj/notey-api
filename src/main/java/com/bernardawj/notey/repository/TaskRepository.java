@@ -1,6 +1,7 @@
 package com.bernardawj.notey.repository;
 
 import com.bernardawj.notey.entity.Task;
+import com.bernardawj.notey.enums.TaskType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -24,6 +25,29 @@ public interface TaskRepository extends PagingAndSortingRepository<Task, Integer
     @Query("SELECT t FROM Task t WHERE t.user.id = :userId")
     Page<Task> findAllByUserId(@Param("userId") Integer userId, Pageable pageable);
 
-    @Query("SELECT t FROM Task t WHERE t.project.id = :projectId")
-    Page<Task> findAllByProjectIdAndPagination(@Param("projectId") Integer projectId, Pageable pageable);
+    @Query("SELECT t FROM Task t WHERE t.project.id = :projectId AND LOWER(t.name) LIKE LOWER(CONCAT('%', :filter, " +
+            "'%'))")
+    Page<Task> findAllByProjectIdAndPagination(@Param("projectId") Integer projectId, @Param("filter") String filter,
+                                               Pageable pageable);
+
+    @Query("SELECT t FROM Task t WHERE t.project.id = :projectId AND LOWER(t.name) LIKE LOWER(CONCAT('%', :filter, " +
+            "'%')) AND t.type = :type")
+    Page<Task> findAllByProjectIdAndPaginationAndType(@Param("projectId") Integer projectId,
+                                                      @Param("filter") String filter, @Param("type") TaskType type,
+                                                      Pageable pageable);
+
+    @Query("SELECT t FROM Task t WHERE t.project.id = :projectId AND LOWER(t.name) LIKE LOWER(CONCAT('%', :filter, " +
+            "'%')) AND t.isCompleted = :completed")
+    Page<Task> findAllByProjectIdAndPaginationAndCompleted(@Param("projectId") Integer projectId,
+                                                           @Param("filter") String filter,
+                                                           @Param("completed") Boolean completed,
+                                                           Pageable pageable);
+
+    @Query("SELECT t FROM Task t WHERE t.project.id = :projectId AND LOWER(t.name) LIKE LOWER(CONCAT('%', :filter, " +
+            "'%')) AND t.type = :type AND t.isCompleted = :completed")
+    Page<Task> findAllByProjectIdAndPaginationAndTypeOrCompleted(@Param("projectId") Integer projectId,
+                                                                 @Param("filter") String filter,
+                                                                 @Param("type") TaskType type,
+                                                                 @Param("completed") Boolean completed,
+                                                                 Pageable pageable);
 }

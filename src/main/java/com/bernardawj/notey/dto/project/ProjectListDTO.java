@@ -1,5 +1,6 @@
 package com.bernardawj.notey.dto.project;
 
+import com.bernardawj.notey.dto.shared.PaginationDTO;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
@@ -7,14 +8,14 @@ import java.util.List;
 public class ProjectListDTO {
 
     private List<ProjectDTO> projects;
-    private PageRequest pageRequest;
+    private PaginationDTO pagination;
 
     public ProjectListDTO() {
     }
 
-    public ProjectListDTO(List<ProjectDTO> projects, PageRequest pageRequest) {
+    public ProjectListDTO(List<ProjectDTO> projects, PaginationDTO pagination) {
         this.projects = projects;
-        this.pageRequest = pageRequest;
+        this.pagination = pagination;
     }
 
     public List<ProjectDTO> getProjects() {
@@ -25,11 +26,11 @@ public class ProjectListDTO {
         this.projects = projects;
     }
 
-    public PageRequest getPageRequest() {
-        return pageRequest;
+    public PaginationDTO getPagination() {
+        return pagination;
     }
 
-    public void setPageRequest(PageRequest pageRequest) {
-        this.pageRequest = pageRequest;
+    public void setPagination(PaginationDTO pagination) {
+        this.pagination = pagination;
     }
 }

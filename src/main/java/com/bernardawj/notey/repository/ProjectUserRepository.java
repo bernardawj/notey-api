@@ -2,6 +2,7 @@ package com.bernardawj.notey.repository;
 
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.utility.ProjectUserCompositeKey;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -13,4 +14,8 @@ public interface ProjectUserRepository extends CrudRepository<ProjectUser, Proje
     @Query("SELECT pu FROM ProjectUser pu WHERE pu.projectId = :projectId AND pu.userId = :userId")
     Optional<ProjectUser> findByProjectIdAndUserId(@Param("projectId") Integer projectId,
                                                    @Param("userId") Integer userId);
+
+    @Modifying
+    @Query("DELETE FROM ProjectUser pu WHERE pu.projectId = :projectId")
+    void deleteAllByProjectId(@Param("projectId") Integer projectId);
 }

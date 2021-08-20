@@ -6,15 +6,17 @@ import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;
 
-import java.util.List;
-
 public interface ProjectService {
 
-    List<ProjectDTO> getAllManagedProjects(Integer managerId) throws UserServiceException;
+    ProjectListDTO getAllManagedProjects(GetManagedProjectDTO getManagedProjectDTO) throws UserServiceException;
 
-    List<ProjectDTO> getAllAssignedProjects(Integer userId) throws UserServiceException;
+    ProjectListDTO getAllAssignedProjects(GetAssignedProjectDTO getAssignedProjectDTO) throws UserServiceException;
 
-    void assignUserToProject(AssignProjectDTO assignProjectDTO) throws ProjectServiceException, NotificationServiceException;
+    void assignUserToProject(AssignProjectDTO assignProjectDTO) throws ProjectServiceException,
+            NotificationServiceException;
+
+    void removeUserFromProject(RemoveProjectAssignmentDTO removeProjectAssignmentDTO) throws ProjectServiceException,
+            NotificationServiceException;
 
     void updateProjectAcceptance(ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException;
 
@@ -24,5 +26,5 @@ public interface ProjectService {
 
     ProjectDTO updateProject(UpdateProjectDTO updateProjectDTO) throws ProjectServiceException;
 
-    void deleteProject(DeleteProjectDTO deleteProjectDTO) throws ProjectServiceException;
+    void deleteProject(Integer projectId, Integer managerId) throws ProjectServiceException;
 }

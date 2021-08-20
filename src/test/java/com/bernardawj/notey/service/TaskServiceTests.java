@@ -279,15 +279,12 @@ public class TaskServiceTests {
 
     @Test
     public void invalidTaskIdAndManagerIdOnDeleteTaskShouldThrowException() {
-        // Mock DTO
-        DeleteTaskDTO deleteTaskDTO = new DeleteTaskDTO(1, 1);
-
         // Mock the behavior of repository
         Mockito.when(this.taskRepository.findByTaskIdAndManagerId(Mockito.anyInt(), Mockito.anyInt())).thenReturn(Optional.empty());
 
         // Check if method indeed throws an exception
         TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
-                () -> this.taskService.deleteTask(deleteTaskDTO));
+                () -> this.taskService.deleteTask(1, 1));
 
         // Check if exception message thrown is the same
         Assertions.assertEquals("TaskService.TASK_NOT_FOUND", ex.getMessage());

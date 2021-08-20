@@ -2,12 +2,10 @@ package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
-import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.exception.UserServiceException;
 import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.UserRepository;
-import com.bernardawj.notey.utility.ProjectUserCompositeKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +19,10 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ProjectUserRepository projectUserRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ProjectUserRepository projectUserRepository) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.projectUserRepository = projectUserRepository;
     }
 
     @Override
