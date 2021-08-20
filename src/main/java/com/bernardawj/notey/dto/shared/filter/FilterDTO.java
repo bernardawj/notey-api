@@ -1,6 +1,6 @@
 package com.bernardawj.notey.dto.shared.filter;
 
-public class FilterDTO {
+public abstract class FilterDTO {
 
     private String searchString;
 

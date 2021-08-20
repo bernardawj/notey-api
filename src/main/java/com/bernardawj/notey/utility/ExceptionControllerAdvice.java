@@ -28,8 +28,8 @@ public class ExceptionControllerAdvice {
         this.environment = environment;
     }
 
-    @ExceptionHandler({ NoteServiceException.class, ProjectServiceException.class, UserServiceException.class,
-            TaskServiceException.class, AuthServiceException.class })
+    @ExceptionHandler({ ProjectServiceException.class, UserServiceException.class, TaskServiceException.class,
+            AuthServiceException.class, NotificationServiceException.class })
     public ResponseEntity<ErrorInfo> serviceExceptionHandler(Exception exception) {
         LOGGER.error(exception.getMessage(), exception);
         HttpStatus status = HttpStatus.BAD_REQUEST;
