@@ -13,6 +13,7 @@ import com.bernardawj.notey.entity.Task;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.enums.NotificationType;
 import com.bernardawj.notey.exception.NotificationServiceException;
+import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.ProjectUserRepository;
@@ -44,6 +45,7 @@ public class TaskServiceImpl implements TaskService {
     private final String USER_NOT_PART_OF_PROJECT = "TaskService.USER_NOT_PART_OF_PROJECT";
     private final String NOT_MATCHING_MANAGER = "TaskService.NOT_MATCHING_MANAGER";
     private final String INVALID_UNASSIGNMENT = "TaskService.INVALID_UNASSIGNMENT";
+    private final String INVALID_TASK_DATES = "TaskService.INVALID_TASK_DATES";
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository, ProjectRepository projectRepository,
@@ -65,6 +67,10 @@ public class TaskServiceImpl implements TaskService {
                 createTaskDTO.getName());
         if (optTask.isPresent())
             throw new TaskServiceException("TaskService.TASK_EXISTS");
+
+        // Validate task dates
+        if (createTaskDTO.getStartAt().isAfter(createTaskDTO.getEndAt()))
+            throw new TaskServiceException(INVALID_TASK_DATES);
 
         // Save the task into database
         Task task = new Task(createTaskDTO.getName(), createTaskDTO.getDescription(), createTaskDTO.getType(), false,
@@ -234,6 +240,10 @@ public class TaskServiceImpl implements TaskService {
         // Check if task is being updated by project manager
         if (task.getProject().getManager().getId().intValue() != updateTaskDTO.getManagerId().intValue())
             throw new TaskServiceException(NOT_MATCHING_MANAGER);
+
+        // Validate task dates
+        if (updateTaskDTO.getStartAt().isAfter(updateTaskDTO.getEndAt()))
+            throw new TaskServiceException(INVALID_TASK_DATES);
 
         // Update task and save it into database
         task.setName(updateTaskDTO.getName());

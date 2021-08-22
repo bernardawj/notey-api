@@ -4,7 +4,6 @@ import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.*;
 import com.bernardawj.notey.dto.shared.PaginationDTO;
 import com.bernardawj.notey.dto.task.TaskDTO;
-import com.bernardawj.notey.dto.project.ProjectAcceptanceDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
@@ -170,6 +169,12 @@ public class ProjectServiceImpl implements ProjectService {
             projectUser.setHasAccepted(true);
             this.projectUserRepository.save(projectUser);
         } else {
+            // Remove all tasks in project associated with user
+            projectUser.getProject().getTasks().stream()
+                    .filter(task -> task.getUser().getId().intValue() == projectUser.getUserId().intValue())
+                    .forEach(task -> task.setUser(null));
+            this.projectUserRepository.save(projectUser);
+
             // Delete project user if declined
             this.projectUserRepository.deleteById(compositeKey);
         }
@@ -225,7 +230,8 @@ public class ProjectServiceImpl implements ProjectService {
         Optional<Project> optProject =
                 this.projectRepository.findProjectByProjectIdAndManagerId(updateProjectDTO.getId(),
                         updateProjectDTO.getManagerId());
-        Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
+        Project project = optProject.orElseThrow(() -> new ProjectServiceException("ProjectService" +
+                ".NOT_MATCHING_MANAGER"));
 
         // Validate project dates
         if (updateProjectDTO.getStartAt().isAfter(updateProjectDTO.getEndAt()))
