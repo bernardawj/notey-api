@@ -3,7 +3,10 @@ package com.bernardawj.notey.service;
 import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.project.ProjectUserDTO;
+import com.bernardawj.notey.dto.shared.InputPageDTO;
 import com.bernardawj.notey.dto.shared.PaginationDTO;
+import com.bernardawj.notey.dto.shared.SortDTO;
+import com.bernardawj.notey.dto.shared.SortType;
 import com.bernardawj.notey.dto.shared.filter.TaskFilterDTO;
 import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.dto.user.UserDTO;
@@ -18,6 +21,7 @@ import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.TaskRepository;
+import com.bernardawj.notey.utility.shared.PageableUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -181,9 +185,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskListDTO getAllUserTasks(GetUserTasksDTO getUserTasksDTO) {
-        // Get all tasks related to user from database
-        Pageable pageable = PageRequest.of(getUserTasksDTO.getInputPage().getPageNo() - 1,
-                getUserTasksDTO.getInputPage().getPageSize(), Sort.by("createdAt").descending());
+        // Retrieve all projects based on the manager ID
+        Pageable pageable = PageableUtil.populatePageable(getUserTasksDTO.getSort(), getUserTasksDTO.getInputPage());
 
         TaskFilterDTO taskFilter = getUserTasksDTO.getFilter();
         Page<Task> tasks;
@@ -207,9 +210,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskListDTO getAllProjectTasks(GetProjectTasksDTO getProjectTasksDTO) {
-        // Retrieve all tasks based on project ID from database
-        Pageable pageable = PageRequest.of(getProjectTasksDTO.getInputPage().getPageNo() - 1,
-                getProjectTasksDTO.getInputPage().getPageSize(), Sort.by("createdAt").descending());
+        // Retrieve all projects based on the manager ID
+        Pageable pageable = PageableUtil.populatePageable(getProjectTasksDTO.getSort(), getProjectTasksDTO.getInputPage());
 
         TaskFilterDTO taskFilter = getProjectTasksDTO.getFilter();
         Page<Task> tasks;
@@ -271,10 +273,20 @@ public class TaskServiceImpl implements TaskService {
     private TaskDTO populateTaskDTO(Task task) {
         Project project = task.getProject();
 
+        // Populate manager details
+        User manager = project.getManager();
+        UserDTO managerDTO = new UserDTO();
+        managerDTO.setId(manager.getId());
+        managerDTO.setEmail(manager.getEmail());
+        managerDTO.setFirstName(manager.getFirstName());
+        managerDTO.setLastName(manager.getLastName());
+
+        // Populate project details
         ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setId(project.getId());
         projectDTO.setName(project.getName());
         projectDTO.setDescription(project.getDescription());
+        projectDTO.setManager(managerDTO);
 
         // Populate project users
         List<ProjectUserDTO> projectUsersDTO = new ArrayList<>();

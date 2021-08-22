@@ -2,6 +2,7 @@ package com.bernardawj.notey.dto.project;
 
 import com.bernardawj.notey.dto.shared.BaseListDTO;
 import com.bernardawj.notey.dto.shared.InputPageDTO;
+import com.bernardawj.notey.dto.shared.SortDTO;
 import com.bernardawj.notey.dto.shared.filter.ProjectFilterDTO;
 
 public class GetAssignedProjectDTO extends BaseListDTO<ProjectFilterDTO> {
@@ -11,8 +12,8 @@ public class GetAssignedProjectDTO extends BaseListDTO<ProjectFilterDTO> {
     public GetAssignedProjectDTO() {
     }
 
-    public GetAssignedProjectDTO(ProjectFilterDTO filterDTO, InputPageDTO inputPage, Integer userId) {
-        super(filterDTO, inputPage);
+    public GetAssignedProjectDTO(ProjectFilterDTO filterDTO, SortDTO sortDTO, InputPageDTO inputPage, Integer userId) {
+        super(filterDTO, sortDTO, inputPage);
         this.userId = userId;
     }
 

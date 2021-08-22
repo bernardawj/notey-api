@@ -3,6 +3,7 @@ package com.bernardawj.notey.service;
 import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.*;
 import com.bernardawj.notey.dto.shared.PaginationDTO;
+import com.bernardawj.notey.dto.shared.SortType;
 import com.bernardawj.notey.dto.task.TaskDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
@@ -17,10 +18,12 @@ import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.ProjectUserRepository;
 import com.bernardawj.notey.repository.UserRepository;
 import com.bernardawj.notey.utility.ProjectUserCompositeKey;
+import com.bernardawj.notey.utility.shared.PageableUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -61,8 +64,8 @@ public class ProjectServiceImpl implements ProjectService {
         UserDTO userDTO = this.userService.getUserDetails(getManagedProjectDTO.getManagerId());
 
         // Retrieve all projects based on the manager ID
-        Pageable pageable = PageRequest.of(getManagedProjectDTO.getInputPage().getPageNo() - 1,
-                getManagedProjectDTO.getInputPage().getPageSize());
+        Pageable pageable = PageableUtil.populatePageable(getManagedProjectDTO.getSort(), getManagedProjectDTO.getInputPage());
+
         Page<Project> projects = this.projectRepository.findProjectsByManagerId(userDTO.getId(),
                 getManagedProjectDTO.getFilter().getSearchString(), pageable);
 
@@ -76,9 +79,10 @@ public class ProjectServiceImpl implements ProjectService {
         // Check if user exists
         UserDTO userDTO = this.userService.getUserDetails(getAssignedProjectDTO.getUserId());
 
+        // Retrieve all projects based on the manager ID
+        Pageable pageable = PageableUtil.populatePageable(getAssignedProjectDTO.getSort(), getAssignedProjectDTO.getInputPage());
+
         // Retrieve all projects based on user ID
-        Pageable pageable = PageRequest.of(getAssignedProjectDTO.getInputPage().getPageNo() - 1,
-                getAssignedProjectDTO.getInputPage().getPageSize());
         Page<Project> projects = this.projectRepository.findProjectsByUserId(userDTO.getId(),
                 getAssignedProjectDTO.getFilter().getSearchString(), pageable);
 
