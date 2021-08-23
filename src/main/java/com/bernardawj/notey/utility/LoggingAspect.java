@@ -16,4 +16,14 @@ public class LoggingAspect {
     public void logExceptions(Exception exception) {
         LOGGER.error(exception.getMessage(), exception);
     }
+
+    @AfterThrowing(pointcut = "execution(* com.bernardawj.notey.security.UserDetailsServiceImpl.*(..))", throwing = "exception")
+    public void logAuthExceptions(Exception exception) {
+        LOGGER.error(exception.getMessage(), exception);
+    }
+
+    @AfterThrowing(pointcut = "execution(* org.springframework.security.authentication.dao.DaoAuthenticationProvider.*(..))", throwing = "exception")
+    public void logCredentialsExceptions(Exception exception) {
+        LOGGER.error(exception.getMessage(), exception);
+    }
 }

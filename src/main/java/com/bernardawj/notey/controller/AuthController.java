@@ -10,11 +10,15 @@ import com.bernardawj.notey.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @CrossOrigin
 @RestController
 @RequestMapping(path = "/api/v1/auth")
+@Validated
 public class AuthController {
 
     private final AuthService authService;
@@ -25,13 +29,13 @@ public class AuthController {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<AuthDTO> login(@RequestBody LoginDTO loginDTO) throws AuthServiceException {
+    public ResponseEntity<AuthDTO> login(@RequestBody @Valid LoginDTO loginDTO) throws AuthServiceException {
         AuthDTO authDTO = this.authService.generateAuthenticationToken(loginDTO);
         return new ResponseEntity<>(authDTO, HttpStatus.OK);
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<UserDTO> register(@RequestBody RegisterDTO registerDTO) throws AuthServiceException {
+    public ResponseEntity<UserDTO> register(@RequestBody @Valid RegisterDTO registerDTO) throws AuthServiceException {
         UserDTO userDTO = this.authService.register(registerDTO);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
