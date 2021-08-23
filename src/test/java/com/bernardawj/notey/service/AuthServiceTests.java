@@ -25,7 +25,7 @@ public class AuthServiceTests {
     private AuthServiceImpl authService;
 
     @Test
-    public void invalidEmailExistsOnRegisterShouldThrowException() {
+    public void invalidEmailExists_OnRegister_ShouldThrowException() {
         // Mock DTO
         RegisterDTO registerDTO = new RegisterDTO("dummy@test.com", "password", "Dummy", "User");
 
@@ -41,7 +41,7 @@ public class AuthServiceTests {
     }
 
     @Test
-    public void validOnRegisterShouldReturnDTO() throws AuthServiceException {
+    public void valid_OnRegister_ShouldReturnDTO() throws AuthServiceException {
         // Mock DTO
         RegisterDTO registerDTO = new RegisterDTO("dummy@test.com", "password", "Dummy", "User");
 

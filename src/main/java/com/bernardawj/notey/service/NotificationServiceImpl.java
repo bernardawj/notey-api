@@ -1,8 +1,6 @@
 package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
-import com.bernardawj.notey.dto.notification.DeleteNotificationDTO;
-import com.bernardawj.notey.dto.notification.GetNotificationDTO;
 import com.bernardawj.notey.dto.notification.NotificationDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Notification;
@@ -18,7 +16,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service(value = "notificationService")
 @Transactional
@@ -57,19 +54,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public NotificationDTO getNotification(GetNotificationDTO getNotificationDTO) throws NotificationServiceException {
-        // Check if notifications exists
-        Optional<Notification> optNotification =
-                this.notificationRepository.findByNotificationIdAndUserId(getNotificationDTO.getNotificationId(),
-                        getNotificationDTO.getUserId());
-        Notification notification =
-                optNotification.orElseThrow(() -> new NotificationServiceException(NOTIFICATION_NOT_FOUND));
-
-        // Return DTO
-        return populateToDTO(notification);
-    }
-
-    @Override
     public List<NotificationDTO> getAllUserNotifications(Integer userId) {
         // Check if notifications of user exists
         Iterable<Notification> notifications = this.notificationRepository.findAllByUserId(userId);
@@ -87,19 +71,6 @@ public class NotificationServiceImpl implements NotificationService {
         this.notificationRepository.deleteAll(notifications);
     }
 
-    @Override
-    public void deleteNotification(DeleteNotificationDTO deleteNotificationDTO) throws NotificationServiceException {
-        // Check if notification exists
-        Optional<Notification> optNotification =
-                this.notificationRepository.findByNotificationIdAndUserId(deleteNotificationDTO.getNotificationId(),
-                        deleteNotificationDTO.getUserId());
-        Notification notification =
-                optNotification.orElseThrow(() -> new NotificationServiceException(NOTIFICATION_NOT_FOUND));
-
-        // Delete from database
-        this.notificationRepository.deleteById(notification.getId());
-    }
-
     private NotificationDTO populateToDTO(Notification notification) {
         UserDTO fromUser = new UserDTO(notification.getFromUser().getId(), notification.getFromUser().getEmail(),
                 null, notification.getFromUser().getFirstName(), notification.getFromUser().getLastName());
@@ -113,9 +84,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private List<NotificationDTO> populateToListDTO(Iterable<Notification> notifications) {
         List<NotificationDTO> notificationsDTO = new ArrayList<>();
-        notifications.forEach(notification -> {
-            notificationsDTO.add(populateToDTO(notification));
-        });
+        notifications.forEach(notification -> notificationsDTO.add(populateToDTO(notification)));
         return notificationsDTO;
     }
 }

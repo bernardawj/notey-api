@@ -1,12 +1,27 @@
 package com.bernardawj.notey.dto.notification;
 
 import com.bernardawj.notey.enums.NotificationType;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class CreateNotificationDTO {
 
+    @NotEmpty(message = "{notification.message.empty}")
+    @Length(max = 100, message = "{notification.message.length}")
     private String message;
+
+    @NotNull(message = "{notification.type.empty}")
     private NotificationType type;
+
+    @NotNull(message = "{notification.fromUserId.empty}")
+    @Min(value = 1, message = "{notification.fromUserId.min}")
     private Integer fromUserId;
+
+    @NotNull(message = "{notification.toUserId.empty}")
+    @Min(value = 1, message = "{notification.toUserId.min}")
     private Integer toUserId;
 
     public CreateNotificationDTO() {
