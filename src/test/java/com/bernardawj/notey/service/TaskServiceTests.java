@@ -17,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,8 +41,10 @@ public class TaskServiceTests {
     @InjectMocks
     private TaskServiceImpl taskService;
 
+    // region Create Task
+
     @Test
-    public void invalidProjectIdOnCreateTaskShouldThrowException() {
+    public void invalidProjectId_OnCreateTask_ShouldThrowException() {
         // Mock DTO
         CreateTaskDTO createTaskDTO = new CreateTaskDTO();
         createTaskDTO.setProjectId(1);
@@ -57,7 +61,7 @@ public class TaskServiceTests {
     }
 
     @Test
-    public void invalidTaskNameExistsInProjectOnCreateTaskShouldThrowException() {
+    public void invalidTaskNameExistsInProject_OnCreateTask_ShouldThrowException() {
         // Mock entity
         Project project = new Project();
         project.setId(1);
@@ -80,7 +84,37 @@ public class TaskServiceTests {
     }
 
     @Test
-    public void invalidTaskIdOnAssignUserToTaskShouldThrowException() {
+    public void invalidStartOrEndAt_OnCreateTask_ShouldThrowException() {
+        // Mock entity
+        Project project = new Project();
+        project.setId(1);
+
+        // Mock DTO
+        CreateTaskDTO createTaskDTO = new CreateTaskDTO();
+        createTaskDTO.setName("Dummy task");
+        createTaskDTO.setProjectId(1);
+        createTaskDTO.setStartAt(LocalDateTime.now());
+        createTaskDTO.setEndAt(LocalDateTime.now().minus(3, ChronoUnit.DAYS));
+
+        // Mock behaviors of repository
+        Mockito.when(this.projectRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(project));
+        Mockito.when(this.taskRepository.findByProjectIdAndTaskName(Mockito.anyInt(), Mockito.anyString()))
+                .thenReturn(Optional.empty());
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.createTask(createTaskDTO));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.INVALID_TASK_DATES", ex.getMessage());
+    }
+
+    // endregion
+
+    // region Assign User Task
+
+    @Test
+    public void invalidTaskId_OnAssignUserToTask_ShouldThrowException() {
         // Mock DTO
         AssignTaskDTO assignTaskDTO = new AssignTaskDTO();
         assignTaskDTO.setTaskId(1);
@@ -100,7 +134,7 @@ public class TaskServiceTests {
     }
 
     @Test
-    public void invalidProjectIdAndUserIdOnAssignUserToTaskShouldThrowException() {
+    public void invalidProjectIdAndUserId_OnAssignUserToTask_ShouldThrowException() {
         // Mock DTO
         AssignTaskDTO assignTaskDTO = new AssignTaskDTO();
         assignTaskDTO.setTaskId(1);
@@ -126,7 +160,7 @@ public class TaskServiceTests {
     }
 
     @Test
-    public void invalidManagerIdOnAssignUserToTaskShouldThrowException() {
+    public void invalidManagerId_OnAssignUserToTask_ShouldThrowException() {
         // Mock DTO
         AssignTaskDTO assignTaskDTO = new AssignTaskDTO();
         assignTaskDTO.setTaskId(1);
@@ -154,7 +188,7 @@ public class TaskServiceTests {
     }
 
     @Test
-    public void invalidUnAssignOnAssignUserToTaskShouldThrowException() {
+    public void invalidUnAssign_OnAssignUserToTask_ShouldThrowException() {
         // Mock DTO
         AssignTaskDTO assignTaskDTO = new AssignTaskDTO();
         assignTaskDTO.setTaskId(1);
@@ -182,8 +216,12 @@ public class TaskServiceTests {
         Assertions.assertEquals("TaskService.INVALID_UNASSIGNMENT", ex.getMessage());
     }
 
+    // endregion
+
+    // region Mark Task As Completed
+
     @Test
-    public void invalidTaskIdOnMarkTaskAsCompletedShouldThrowException() {
+    public void invalidTaskId_OnMarkTaskAsCompleted_ShouldThrowException() {
         // Mock behaviors of repository
         Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
 
@@ -195,8 +233,12 @@ public class TaskServiceTests {
         Assertions.assertEquals("TaskService.TASK_NOT_FOUND", ex.getMessage());
     }
 
+    // endregion
+
+    // region Get Task
+
     @Test
-    public void invalidTaskIdOnGetTaskShouldThrowException() {
+    public void invalidTaskId_OnGetTask_ShouldThrowException() {
         // Mock behaviors of repository
         Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
 
@@ -209,7 +251,7 @@ public class TaskServiceTests {
     }
 
     @Test
-    public void invalidUserNotInProjectOnGetTaskShouldThrowException() {
+    public void invalidUserNotInProject_OnGetTask_ShouldThrowException() {
         // Mock entity
         ProjectUser projectUser1 = new ProjectUser();
         projectUser1.setUserId(2);
@@ -221,8 +263,12 @@ public class TaskServiceTests {
         projectUsers.add(projectUser1);
         projectUsers.add(projectUser2);
 
+        User manager = new User();
+        manager.setId(45);
+
         Project project = new Project();
         project.setProjectUsers(projectUsers);
+        project.setManager(manager);
 
         Task task = new Task();
         task.setProject(project);
@@ -238,8 +284,12 @@ public class TaskServiceTests {
         Assertions.assertEquals("TaskService.USER_NOT_PART_OF_PROJECT", ex.getMessage());
     }
 
+    // endregion
+
+    // region Update Task
+
     @Test
-    public void invalidTaskIdOnUpdateTaskShouldThrowException() {
+    public void invalidTaskId_OnUpdateTask_ShouldThrowException() {
         // Mock behaviors of repository
         Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.empty());
 
@@ -252,7 +302,7 @@ public class TaskServiceTests {
     }
 
     @Test
-    public void invalidManagerIdOnUpdateTaskShouldThrowException() {
+    public void invalidManagerId_OnUpdateTask_ShouldThrowException() {
         // Mock entity
         Project project = new Project();
         project.setManager(new User());
@@ -278,6 +328,38 @@ public class TaskServiceTests {
     }
 
     @Test
+    public void invalidStartOrEndAt_OnUpdateTask_ShouldThrowException() {
+        // Mock entity
+        Project project = new Project();
+        project.setManager(new User());
+        project.getManager().setId(2);
+
+        Task task = new Task();
+        task.setProject(project);
+
+        // Mock DTO
+        UpdateTaskDTO updateTaskDTO = new UpdateTaskDTO();
+        updateTaskDTO.setTaskId(1);
+        updateTaskDTO.setManagerId(2);
+        updateTaskDTO.setStartAt(LocalDateTime.now());
+        updateTaskDTO.setEndAt(LocalDateTime.now().minus(3, ChronoUnit.DAYS));
+
+        // Mock behaviors of repository
+        Mockito.when(this.taskRepository.findById(Mockito.anyInt())).thenReturn(Optional.of(task));
+
+        // Check if method indeed throws an exception
+        TaskServiceException ex = Assertions.assertThrows(TaskServiceException.class,
+                () -> this.taskService.updateTask(updateTaskDTO));
+
+        // Check if exception message thrown is the same
+        Assertions.assertEquals("TaskService.INVALID_TASK_DATES", ex.getMessage());
+    }
+
+    // endregion
+
+    // region Delete Task
+
+    @Test
     public void invalidTaskIdAndManagerIdOnDeleteTaskShouldThrowException() {
         // Mock the behavior of repository
         Mockito.when(this.taskRepository.findByTaskIdAndManagerId(Mockito.anyInt(), Mockito.anyInt())).thenReturn(Optional.empty());
@@ -289,4 +371,6 @@ public class TaskServiceTests {
         // Check if exception message thrown is the same
         Assertions.assertEquals("TaskService.TASK_NOT_FOUND", ex.getMessage());
     }
+
+    // endregion
 }

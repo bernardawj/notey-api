@@ -1,8 +1,14 @@
 package com.bernardawj.notey.dto.shared;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class SortDTO {
 
+    @NotEmpty(message = "{sort.by.empty}")
     private String by;
+
+    @NotNull(message = "{sort.type.empty}")
     private SortType type;
 
     public SortDTO() {

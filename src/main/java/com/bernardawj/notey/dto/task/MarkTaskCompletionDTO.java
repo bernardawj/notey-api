@@ -1,9 +1,19 @@
 package com.bernardawj.notey.dto.task;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 public class MarkTaskCompletionDTO {
 
+    @NotNull(message = "{task.id.empty}")
+    @Min(value = 1, message = "{task.id.length}")
     private Integer taskId;
+
+    @NotNull(message = "{task.userId.empty}")
+    @Min(value = 1, message = "{task.userId.length}")
     private Integer userId;
+
+    @NotNull(message = "{task.isCompleted.empty}")
     private Boolean complete;
 
     public MarkTaskCompletionDTO() {

@@ -1,9 +1,20 @@
 package com.bernardawj.notey.dto.shared;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 public abstract class BaseListDTO<FilterDTO> {
 
+    @NotNull(message = "{filter.empty}")
+    @Valid
     private FilterDTO filter;
+
+    @NotNull(message = "{sort.empty}")
+    @Valid
     private SortDTO sort;
+
+    @NotNull(message = "{inputPage.empty}")
+    @Valid
     private InputPageDTO inputPage;
 
     public BaseListDTO() {

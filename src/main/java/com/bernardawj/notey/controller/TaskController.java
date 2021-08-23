@@ -8,10 +8,15 @@ import com.bernardawj.notey.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/api/v1/task")
+@Validated
 public class TaskController {
 
     private final TaskService taskService;
@@ -22,19 +27,19 @@ public class TaskController {
     }
 
     @PostMapping()
-    public ResponseEntity<TaskDTO> createTask(@RequestBody CreateTaskDTO createTaskDTO) throws TaskServiceException {
+    public ResponseEntity<TaskDTO> createTask(@RequestBody @Valid CreateTaskDTO createTaskDTO) throws TaskServiceException {
         TaskDTO createdTaskDTO = this.taskService.createTask(createTaskDTO);
         return new ResponseEntity<>(createdTaskDTO, HttpStatus.OK);
     }
 
     @PostMapping(path = "/assign")
-    public ResponseEntity<Void> assignTaskToUser(@RequestBody AssignTaskDTO assignTaskDTO) throws TaskServiceException, NotificationServiceException {
+    public ResponseEntity<Void> assignTaskToUser(@RequestBody @Valid AssignTaskDTO assignTaskDTO) throws TaskServiceException, NotificationServiceException {
         this.taskService.assignTaskToUser(assignTaskDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(path = "/mark-completion")
-    public ResponseEntity<Void> markTaskAsCompleted(@RequestBody MarkTaskCompletionDTO markTaskCompletionDTO)
+    public ResponseEntity<Void> markTaskAsCompleted(@RequestBody @Valid MarkTaskCompletionDTO markTaskCompletionDTO)
             throws TaskServiceException, NotificationServiceException {
         this.taskService.markTaskAsCompleted(markTaskCompletionDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -48,19 +53,19 @@ public class TaskController {
     }
 
     @PostMapping(path = "/user")
-    public ResponseEntity<TaskListDTO> getAllUserTasks(@RequestBody GetUserTasksDTO getUserTasksDTO) {
+    public ResponseEntity<TaskListDTO> getAllUserTasks(@RequestBody @Valid GetUserTasksDTO getUserTasksDTO) {
         TaskListDTO tasksDTO = this.taskService.getAllUserTasks(getUserTasksDTO);
         return new ResponseEntity<>(tasksDTO, HttpStatus.OK);
     }
 
     @PostMapping(path = "/project")
-    public ResponseEntity<TaskListDTO> getAllProjectTasks(@RequestBody GetProjectTasksDTO getProjectTasksDTO) {
+    public ResponseEntity<TaskListDTO> getAllProjectTasks(@RequestBody @Valid GetProjectTasksDTO getProjectTasksDTO) {
         TaskListDTO taskListDTO = this.taskService.getAllProjectTasks(getProjectTasksDTO);
         return new ResponseEntity<>(taskListDTO, HttpStatus.OK);
     }
 
     @PutMapping()
-    public ResponseEntity<TaskDTO> updateTask(@RequestBody UpdateTaskDTO updateTaskDTO) throws TaskServiceException {
+    public ResponseEntity<TaskDTO> updateTask(@RequestBody @Valid UpdateTaskDTO updateTaskDTO) throws TaskServiceException {
         TaskDTO taskDTO = this.taskService.updateTask(updateTaskDTO);
         return new ResponseEntity<>(taskDTO, HttpStatus.OK);
     }

@@ -2,32 +2,31 @@ package com.bernardawj.notey.dto.task;
 
 import com.bernardawj.notey.enums.TaskType;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-public class UpdateTaskDTO {
+public class UpdateTaskDTO extends BaseTaskDTO {
 
+    @NotNull(message = "{task.id.empty}")
+    @Min(value = 1, message = "{task.id.length}")
     private Integer taskId;
-    private String name;
-    private String description;
-    private TaskType type;
-    private Boolean completed;
-    private LocalDateTime startAt;
-    private LocalDateTime endAt;
 
+    @NotNull(message = "{task.completed.empty}")
+    private Boolean completed;
+
+    @NotNull(message = "{task.managerId.empty}")
+    @Min(value = 1, message = "{task.managerId.length}")
     private Integer managerId;
 
     public UpdateTaskDTO() {
     }
 
-    public UpdateTaskDTO(Integer taskId, String name, String description, TaskType type, Boolean completed,
-                         LocalDateTime startAt, LocalDateTime endAt, Integer managerId) {
+    public UpdateTaskDTO(String name, String description, TaskType type, LocalDateTime startAt, LocalDateTime endAt,
+                         Integer taskId, Boolean completed, Integer managerId) {
+        super(name, description, type, startAt, endAt);
         this.taskId = taskId;
-        this.name = name;
-        this.description = description;
-        this.type = type;
         this.completed = completed;
-        this.startAt = startAt;
-        this.endAt = endAt;
         this.managerId = managerId;
     }
 
@@ -39,52 +38,12 @@ public class UpdateTaskDTO {
         this.taskId = taskId;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public TaskType getType() {
-        return type;
-    }
-
-    public void setType(TaskType type) {
-        this.type = type;
-    }
-
     public Boolean getCompleted() {
         return completed;
     }
 
     public void setCompleted(Boolean completed) {
         this.completed = completed;
-    }
-
-    public LocalDateTime getStartAt() {
-        return startAt;
-    }
-
-    public void setStartAt(LocalDateTime startAt) {
-        this.startAt = startAt;
-    }
-
-    public LocalDateTime getEndAt() {
-        return endAt;
-    }
-
-    public void setEndAt(LocalDateTime endAt) {
-        this.endAt = endAt;
     }
 
     public Integer getManagerId() {

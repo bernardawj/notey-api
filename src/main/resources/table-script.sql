@@ -20,6 +20,7 @@ CREATE TABLE projects
     description TEXT      NOT NULL,
     start_at    TIMESTAMP NOT NULL,
     end_at      TIMESTAMP NOT NULL,
+    created_at  TIMESTAMP NOT NULL,
     manager_id  INTEGER   NOT NULL,
     CONSTRAINT projects_manager_id_fk FOREIGN KEY (manager_id) REFERENCES users (id),
     CONSTRAINT projects_max_name_length_check CHECK (length(name) <= 50),

@@ -1,28 +1,24 @@
 package com.bernardawj.notey.dto.task;
 
-public class AssignTaskDTO {
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
-    private Integer taskId;
+public class AssignTaskDTO extends BaseTaskPermissionDTO {
+
+    @NotNull(message = "{task.userId.empty}")
+    @Min(value = 1, message = "{task.userId.min}")
     private Integer userId;
-    private Integer managerId;
+
+    @NotNull(message = "{task.assign.empty}")
     private Boolean assign;
 
     public AssignTaskDTO() {
     }
 
-    public AssignTaskDTO(Integer taskId, Integer userId, Integer managerId, Boolean assign) {
-        this.taskId = taskId;
+    public AssignTaskDTO(Integer taskId, Integer managerId, Integer userId, Boolean assign) {
+        super(taskId, managerId);
         this.userId = userId;
-        this.managerId = managerId;
         this.assign = assign;
-    }
-
-    public Integer getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Integer taskId) {
-        this.taskId = taskId;
     }
 
     public Integer getUserId() {
@@ -31,14 +27,6 @@ public class AssignTaskDTO {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
-    }
-
-    public Integer getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(Integer managerId) {
-        this.managerId = managerId;
     }
 
     public Boolean getAssign() {

@@ -3,10 +3,7 @@ package com.bernardawj.notey.service;
 import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.ProjectDTO;
 import com.bernardawj.notey.dto.project.ProjectUserDTO;
-import com.bernardawj.notey.dto.shared.InputPageDTO;
 import com.bernardawj.notey.dto.shared.PaginationDTO;
-import com.bernardawj.notey.dto.shared.SortDTO;
-import com.bernardawj.notey.dto.shared.SortType;
 import com.bernardawj.notey.dto.shared.filter.TaskFilterDTO;
 import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.dto.user.UserDTO;
@@ -16,7 +13,6 @@ import com.bernardawj.notey.entity.Task;
 import com.bernardawj.notey.entity.User;
 import com.bernardawj.notey.enums.NotificationType;
 import com.bernardawj.notey.exception.NotificationServiceException;
-import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.TaskServiceException;
 import com.bernardawj.notey.repository.ProjectRepository;
 import com.bernardawj.notey.repository.ProjectUserRepository;
@@ -24,9 +20,7 @@ import com.bernardawj.notey.repository.TaskRepository;
 import com.bernardawj.notey.utility.shared.PageableUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -211,7 +205,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskListDTO getAllProjectTasks(GetProjectTasksDTO getProjectTasksDTO) {
         // Retrieve all projects based on the manager ID
-        Pageable pageable = PageableUtil.populatePageable(getProjectTasksDTO.getSort(), getProjectTasksDTO.getInputPage());
+        Pageable pageable = PageableUtil.populatePageable(getProjectTasksDTO.getSort(),
+                getProjectTasksDTO.getInputPage());
 
         TaskFilterDTO taskFilter = getProjectTasksDTO.getFilter();
         Page<Task> tasks;
@@ -290,11 +285,9 @@ public class TaskServiceImpl implements TaskService {
 
         // Populate project users
         List<ProjectUserDTO> projectUsersDTO = new ArrayList<>();
-        project.getProjectUsers().forEach(assignedUser -> {
-            projectUsersDTO.add(new ProjectUserDTO(assignedUser.getUser().getId(), assignedUser.getUser().getEmail(),
-                    assignedUser.getUser().getFirstName(), assignedUser.getUser().getLastName(),
-                    assignedUser.getHasAccepted()));
-        });
+        project.getProjectUsers().forEach(assignedUser -> projectUsersDTO.add(new ProjectUserDTO(assignedUser.getUser().getId(), assignedUser.getUser().getEmail(),
+                assignedUser.getUser().getFirstName(), assignedUser.getUser().getLastName(),
+                assignedUser.getHasAccepted())));
         projectDTO.setAssignedUsers(projectUsersDTO);
 
         // Populate task
@@ -317,9 +310,7 @@ public class TaskServiceImpl implements TaskService {
 
     private List<TaskDTO> populateTasksDTO(Iterable<Task> tasks) {
         List<TaskDTO> tasksDTO = new ArrayList<>();
-        tasks.forEach(task -> {
-            tasksDTO.add(populateTaskDTO(task));
-        });
+        tasks.forEach(task -> tasksDTO.add(populateTaskDTO(task)));
         return tasksDTO;
     }
 

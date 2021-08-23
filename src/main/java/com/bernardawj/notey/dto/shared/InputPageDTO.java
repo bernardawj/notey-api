@@ -1,31 +1,39 @@
 package com.bernardawj.notey.dto.shared;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 public class InputPageDTO {
 
-    private int pageNo;
-    private int pageSize;
+    @NotNull(message = "{inputPage.pageNo.empty}")
+    @Min(value = 1, message = "{inputPage.pageNo.min}")
+    private Integer pageNo;
+
+    @NotNull(message = "{inputPage.pageSize.empty}")
+    @Min(value = 1, message = "{inputPage.pageSize.min}")
+    private Integer pageSize;
 
     public InputPageDTO() {
     }
 
-    public InputPageDTO(int pageNo, int pageSize) {
+    public InputPageDTO(Integer pageNo, Integer pageSize) {
         this.pageNo = pageNo;
         this.pageSize = pageSize;
     }
 
-    public int getPageNo() {
+    public Integer getPageNo() {
         return pageNo;
     }
 
-    public void setPageNo(int pageNo) {
+    public void setPageNo(Integer pageNo) {
         this.pageNo = pageNo;
     }
 
-    public int getPageSize() {
+    public Integer getPageSize() {
         return pageSize;
     }
 
-    public void setPageSize(int pageSize) {
+    public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
     }
 }

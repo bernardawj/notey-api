@@ -2,6 +2,7 @@ package com.bernardawj.notey.dto.shared.filter;
 
 public abstract class FilterDTO {
 
+
     private String searchString;
 
     public FilterDTO() {
