@@ -1,9 +1,18 @@
 package com.bernardawj.notey.dto.project;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 public class ProjectAcceptanceDTO {
 
+    @NotNull(message = "{project.userId.empty}")
+    @Min(value = 1, message = "{project.userId.min}")
     private Integer userId;
+
+    @NotNull(message = "{project.id.empty}")
+    @Min(value = 1, message = "{project.id.min}")
     private Integer projectId;
+
     private Boolean accept;
 
     public ProjectAcceptanceDTO() {

@@ -5,8 +5,13 @@ import com.bernardawj.notey.dto.shared.InputPageDTO;
 import com.bernardawj.notey.dto.shared.SortDTO;
 import com.bernardawj.notey.dto.shared.filter.ProjectFilterDTO;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 public class GetAssignedProjectDTO extends BaseListDTO<ProjectFilterDTO> {
 
+    @NotNull(message = "{project.userId.empty}")
+    @Min(value = 1, message = "{project.userId.min}")
     private Integer userId;
 
     public GetAssignedProjectDTO() {

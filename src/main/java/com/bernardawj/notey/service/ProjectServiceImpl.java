@@ -3,7 +3,6 @@ package com.bernardawj.notey.service;
 import com.bernardawj.notey.dto.notification.CreateNotificationDTO;
 import com.bernardawj.notey.dto.project.*;
 import com.bernardawj.notey.dto.shared.PaginationDTO;
-import com.bernardawj.notey.dto.shared.SortType;
 import com.bernardawj.notey.dto.task.TaskDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.entity.Project;
@@ -21,16 +20,13 @@ import com.bernardawj.notey.utility.ProjectUserCompositeKey;
 import com.bernardawj.notey.utility.shared.PageableUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service(value = "projectService")
 @Transactional
@@ -44,8 +40,10 @@ public class ProjectServiceImpl implements ProjectService {
 
     private final String PROJECT_NOT_FOUND = "ProjectService.PROJECT_NOT_FOUND";
     private final String INVALID_PROJECT_DATES = "ProjectService.INVALID_PROJECT_DATES";
-    private final String USER_IS_MANAGER = "ProjectService.USER_IS_MANAGER";
+    private final String ASSIGNED_USER_IS_MANAGER = "ProjectService.ASSIGNED_USER_IS_MANAGER";
     private final String USER_NOT_FOUND = "ProjectService.USER_NOT_FOUND";
+    private final String NOT_MATCHING_MANAGER = "ProjectService.NOT_MATCHING_MANAGER";
+    private final String USER_NOT_FOUND_IN_PROJECT="ProjectService.USER_NOT_FOUND_IN_PROJECT";
 
     @Autowired
     public ProjectServiceImpl(ProjectRepository projectRepository, UserRepository userRepository,
@@ -64,7 +62,8 @@ public class ProjectServiceImpl implements ProjectService {
         UserDTO userDTO = this.userService.getUserDetails(getManagedProjectDTO.getManagerId());
 
         // Retrieve all projects based on the manager ID
-        Pageable pageable = PageableUtil.populatePageable(getManagedProjectDTO.getSort(), getManagedProjectDTO.getInputPage());
+        Pageable pageable = PageableUtil.populatePageable(getManagedProjectDTO.getSort(),
+                getManagedProjectDTO.getInputPage());
 
         Page<Project> projects = this.projectRepository.findProjectsByManagerId(userDTO.getId(),
                 getManagedProjectDTO.getFilter().getSearchString(), pageable);
@@ -80,7 +79,8 @@ public class ProjectServiceImpl implements ProjectService {
         UserDTO userDTO = this.userService.getUserDetails(getAssignedProjectDTO.getUserId());
 
         // Retrieve all projects based on the manager ID
-        Pageable pageable = PageableUtil.populatePageable(getAssignedProjectDTO.getSort(), getAssignedProjectDTO.getInputPage());
+        Pageable pageable = PageableUtil.populatePageable(getAssignedProjectDTO.getSort(),
+                getAssignedProjectDTO.getInputPage());
 
         // Retrieve all projects based on user ID
         Page<Project> projects = this.projectRepository.findProjectsByUserId(userDTO.getId(),
@@ -98,6 +98,10 @@ public class ProjectServiceImpl implements ProjectService {
         Optional<Project> optProject = this.projectRepository.findById(assignProjectDTO.getProjectId());
         Project project = optProject.orElseThrow(() -> new ProjectServiceException(PROJECT_NOT_FOUND));
 
+        // Check if manager is valid
+        if (project.getManager().getId().intValue() != assignProjectDTO.getManagerId().intValue())
+            throw new ProjectServiceException(NOT_MATCHING_MANAGER);
+
         // Check if user exists
         Optional<User> optUser = this.userRepository.findUserByEmail(assignProjectDTO.getEmail());
         User user = optUser.orElseThrow(() -> new ProjectServiceException(USER_NOT_FOUND));
@@ -108,9 +112,9 @@ public class ProjectServiceImpl implements ProjectService {
         if (optProjectUser.isPresent())
             throw new ProjectServiceException("ProjectService.USER_EXISTS_IN_PROJECT");
 
-        // Check if user is the manager
+        // Check if assigned user is the manager
         if (project.getManager().getId().intValue() == user.getId().intValue())
-            throw new ProjectServiceException(USER_IS_MANAGER);
+            throw new ProjectServiceException(ASSIGNED_USER_IS_MANAGER);
 
         // Update project and save to database
         project.getProjectUsers().add(new ProjectUser(project.getId(), user.getId(), false, null));
@@ -127,23 +131,23 @@ public class ProjectServiceImpl implements ProjectService {
     public void removeUserFromProject(RemoveProjectAssignmentDTO removeProjectAssignmentDTO) throws ProjectServiceException,
             NotificationServiceException {
         // Check if user is already in the project
+        ProjectUserCompositeKey compositeKey = new ProjectUserCompositeKey(removeProjectAssignmentDTO.getProjectId(),
+                removeProjectAssignmentDTO.getUserId());
         Optional<ProjectUser> optProjectUser =
-                this.projectUserRepository.findByProjectIdAndUserId(removeProjectAssignmentDTO.getProjectId(),
-                        removeProjectAssignmentDTO.getUserId());
-        ProjectUser projectUser = optProjectUser.orElseThrow(() -> new ProjectServiceException("ProjectService" +
-                ".USER_NOT_FOUND_IN_PROJECT"));
+                this.projectUserRepository.findById(compositeKey);
+        ProjectUser projectUser = optProjectUser.orElseThrow(() -> new ProjectServiceException(USER_NOT_FOUND_IN_PROJECT));
 
         // Check if manager ID is valid
         boolean isManager =
                 projectUser.getProject().getManager().getId().intValue() == removeProjectAssignmentDTO.getManagerId();
         if (!isManager)
-            throw new ProjectServiceException("ProjectService.USER_NOT_MANAGER");
+            throw new ProjectServiceException(NOT_MATCHING_MANAGER);
 
         // Remove all tasks associated with the user
-        List<Task> userTasks =
-                projectUser.getUser().getTasks().stream().filter(task ->
-                        task.getProject().getId().intValue() == projectUser.getProjectId().intValue()).collect(Collectors.toList());
-        userTasks.forEach(task -> task.setUser(null));
+        for (Task task : projectUser.getUser().getTasks()) {
+            if (task.getProject().getId().intValue() == projectUser.getProjectId().intValue())
+                task.setUser(null);
+        }
 
         // Remove project assignment
         this.projectUserRepository.deleteById(new ProjectUserCompositeKey(projectUser.getProjectId(),
@@ -165,8 +169,7 @@ public class ProjectServiceImpl implements ProjectService {
                 projectAcceptanceDTO.getUserId());
         Optional<ProjectUser> optProjectUser =
                 this.projectUserRepository.findById(compositeKey);
-        ProjectUser projectUser = optProjectUser.orElseThrow(() -> new ProjectServiceException("ProjectService" +
-                ".NO_PROJECT_FOR_ACCEPTANCE"));
+        ProjectUser projectUser = optProjectUser.orElseThrow(() -> new ProjectServiceException(USER_NOT_FOUND_IN_PROJECT));
 
         if (projectAcceptanceDTO.getAccept()) {
             // Perform acceptance on project and update the database
@@ -174,8 +177,9 @@ public class ProjectServiceImpl implements ProjectService {
             this.projectUserRepository.save(projectUser);
         } else {
             // Remove all tasks in project associated with user
+            projectUser.setHasAccepted(false);
             projectUser.getProject().getTasks().stream()
-                    .filter(task -> task.getUser().getId().intValue() == projectUser.getUserId().intValue())
+                    .filter(task -> task.getUser() != null && task.getUser().getId().intValue() == projectUser.getUserId().intValue())
                     .forEach(task -> task.setUser(null));
             this.projectUserRepository.save(projectUser);
 
@@ -234,8 +238,7 @@ public class ProjectServiceImpl implements ProjectService {
         Optional<Project> optProject =
                 this.projectRepository.findProjectByProjectIdAndManagerId(updateProjectDTO.getId(),
                         updateProjectDTO.getManagerId());
-        Project project = optProject.orElseThrow(() -> new ProjectServiceException("ProjectService" +
-                ".NOT_MATCHING_MANAGER"));
+        Project project = optProject.orElseThrow(() -> new ProjectServiceException(NOT_MATCHING_MANAGER));
 
         // Validate project dates
         if (updateProjectDTO.getStartAt().isAfter(updateProjectDTO.getEndAt()))

@@ -1,24 +1,20 @@
 package com.bernardawj.notey.dto.project;
 
-public class AssignProjectDTO {
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
-    private Integer projectId;
+public class AssignProjectDTO extends BaseProjectPermissionDTO {
+
+    @NotEmpty(message = "{project.email.empty}")
+    @Email(message = "{project.email.invalid}")
     private String email;
 
     public AssignProjectDTO() {
     }
 
-    public AssignProjectDTO(Integer projectId, String email) {
-        this.projectId = projectId;
+    public AssignProjectDTO(Integer projectId, Integer managerId, String email) {
+        super(projectId, managerId);
         this.email = email;
-    }
-
-    public Integer getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
     }
 
     public String getEmail() {

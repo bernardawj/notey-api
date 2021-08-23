@@ -1,16 +1,27 @@
 package com.bernardawj.notey.dto.project;
 
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public abstract class BaseProjectDTO {
 
-    @NotNull(message = "{project.name}")
+    @NotBlank(message = "{project.name.empty}")
+    @Length(max = 50, message = "project.name.length")
     private String name;
+
+    @NotBlank(message = "{project.description.empty}")
+    @Length(max = 255, message = "project.name.length")
     private String description;
+
     private LocalDateTime startAt;
     private LocalDateTime endAt;
 
+    @NotNull(message = "{project.managerId.empty}")
+    @Min(value = 1, message = "{project.managerId.min}")
     private Integer managerId;
 
     public BaseProjectDTO() {

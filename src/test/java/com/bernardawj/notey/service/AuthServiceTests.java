@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
@@ -19,10 +21,21 @@ import java.util.Optional;
 public class AuthServiceTests {
 
     @Mock
+    private UserDetailsService userDetailsService;
+
+    @Mock
     private UserRepository userRepository;
 
     @InjectMocks
     private AuthServiceImpl authService;
+
+    @Test
+    public void invalidLoginUsernameOnGenerateAuthenticationTokenShouldThrowException() {
+        // Mock repository behavior
+        Mockito.when(this.userDetailsService.loadUserByUsername(Mockito.anyString())).thenThrow(UsernameNotFoundException.class);
+
+        // Assert if method indeed throws
+    }
 
     @Test
     public void invalidEmailExistsOnRegisterShouldThrowException() {

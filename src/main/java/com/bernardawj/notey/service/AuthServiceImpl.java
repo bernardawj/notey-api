@@ -38,18 +38,11 @@ public class AuthServiceImpl implements AuthService {
         this.jwtHelper = jwtHelper;
     }
 
-    private UserDTO getUserInformation(String email, String password) throws AuthServiceException {
-        Optional<User> optUser = this.userRepository.findUserByEmail(email);
-        User user = optUser.orElseThrow(() -> new AuthServiceException("AuthService.USER_NOT_FOUND"));
-
-        if (!password.equals(user.getPassword()))
-            throw new AuthServiceException("AuthService.WRONG_PASSWORD");
-
-        return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName());
-    }
-
     @Override
     public AuthDTO generateAuthenticationToken(LoginDTO loginDTO) throws AuthServiceException {
+        // Check if user exists
+
+
         // Authenticate user
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDTO.getEmail());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(),
@@ -77,6 +70,16 @@ public class AuthServiceImpl implements AuthService {
         this.userRepository.save(user);
 
         // Return DTO
+        return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName());
+    }
+    
+    private UserDTO getUserInformation(String email, String password) throws AuthServiceException {
+        Optional<User> optUser = this.userRepository.findUserByEmail(email);
+        User user = optUser.orElseThrow(() -> new AuthServiceException("AuthService.USER_NOT_FOUND"));
+
+        if (!password.equals(user.getPassword()))
+            throw new AuthServiceException("AuthService.WRONG_PASSWORD");
+
         return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName());
     }
 }

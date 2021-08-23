@@ -17,8 +17,8 @@ import javax.validation.Valid;
 
 @CrossOrigin
 @RestController
-@RequestMapping(path = "/api/v1/project")
 @Validated
+@RequestMapping(path = "/api/v1/project")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -29,35 +29,35 @@ public class ProjectController {
     }
 
     @PostMapping(path = "/managed")
-    public ResponseEntity<ProjectListDTO> getAllManagedProjects(@RequestBody GetManagedProjectDTO getManagedProjectDTO)
+    public ResponseEntity<ProjectListDTO> getAllManagedProjects(@RequestBody @Valid GetManagedProjectDTO getManagedProjectDTO)
             throws UserServiceException {
         ProjectListDTO projectListDTO = this.projectService.getAllManagedProjects(getManagedProjectDTO);
         return new ResponseEntity<>(projectListDTO, HttpStatus.OK);
     }
 
     @PostMapping(path = "/assigned")
-    public ResponseEntity<ProjectListDTO> getAllAssignedProjects(@RequestBody GetAssignedProjectDTO getAssignedProjectDTO)
+    public ResponseEntity<ProjectListDTO> getAllAssignedProjects(@RequestBody @Valid GetAssignedProjectDTO getAssignedProjectDTO)
             throws UserServiceException {
         ProjectListDTO projectListDTO = this.projectService.getAllAssignedProjects(getAssignedProjectDTO);
         return new ResponseEntity<>(projectListDTO, HttpStatus.OK);
     }
 
     @PostMapping(path = "/assign")
-    public ResponseEntity<Void> assignUserToProject(@RequestBody AssignProjectDTO assignProjectDTO)
+    public ResponseEntity<Void> assignUserToProject(@RequestBody @Valid AssignProjectDTO assignProjectDTO)
             throws ProjectServiceException, NotificationServiceException {
         this.projectService.assignUserToProject(assignProjectDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(path = "/remove-assignment")
-    public ResponseEntity<Void> removeUserFromProject(@RequestBody RemoveProjectAssignmentDTO removeProjectAssignmentDTO)
+    public ResponseEntity<Void> removeUserFromProject(@RequestBody @Valid RemoveProjectAssignmentDTO removeProjectAssignmentDTO)
             throws ProjectServiceException, NotificationServiceException {
         this.projectService.removeUserFromProject(removeProjectAssignmentDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(path = "/acceptance")
-    public ResponseEntity<Void> updateProjectAcceptance(@RequestBody ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException, NotificationServiceException {
+    public ResponseEntity<Void> updateProjectAcceptance(@RequestBody @Valid ProjectAcceptanceDTO projectAcceptanceDTO) throws ProjectServiceException, NotificationServiceException {
         this.projectService.updateProjectAcceptance(projectAcceptanceDTO);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -71,14 +71,14 @@ public class ProjectController {
     }
 
     @PostMapping()
-    public ResponseEntity<ProjectDTO> createProject(@Valid @RequestBody CreateProjectDTO createProjectDTO) throws UserServiceException,
+    public ResponseEntity<ProjectDTO> createProject(@RequestBody @Valid CreateProjectDTO createProjectDTO) throws UserServiceException,
             ProjectServiceException {
         ProjectDTO returnedProjectDTO = this.projectService.createProject(createProjectDTO);
         return new ResponseEntity<>(returnedProjectDTO, HttpStatus.OK);
     }
 
     @PutMapping()
-    public ResponseEntity<ProjectDTO> updateProject(@RequestBody UpdateProjectDTO updateProjectDTO) throws ProjectServiceException {
+    public ResponseEntity<ProjectDTO> updateProject(@RequestBody @Valid UpdateProjectDTO updateProjectDTO) throws ProjectServiceException {
         ProjectDTO updatedProjectDTO = this.projectService.updateProject(updateProjectDTO);
         return new ResponseEntity<>(updatedProjectDTO, HttpStatus.OK);
     }

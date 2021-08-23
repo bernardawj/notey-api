@@ -1,26 +1,20 @@
 package com.bernardawj.notey.dto.project;
 
-public class RemoveProjectAssignmentDTO {
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
-    private Integer projectId;
+public class RemoveProjectAssignmentDTO extends BaseProjectPermissionDTO {
+
+    @NotNull(message = "{project.userId.empty}")
+    @Min(value = 1, message = "{project.userId.min}")
     private Integer userId;
-    private Integer managerId;
 
     public RemoveProjectAssignmentDTO() {
     }
 
-    public RemoveProjectAssignmentDTO(Integer projectId, Integer userId, Integer managerId) {
-        this.projectId = projectId;
+    public RemoveProjectAssignmentDTO(Integer projectId, Integer managerId, Integer userId) {
+        super(projectId, managerId);
         this.userId = userId;
-        this.managerId = managerId;
-    }
-
-    public Integer getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Integer projectId) {
-        this.projectId = projectId;
     }
 
     public Integer getUserId() {
@@ -29,13 +23,5 @@ public class RemoveProjectAssignmentDTO {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
-    }
-
-    public Integer getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(Integer managerId) {
-        this.managerId = managerId;
     }
 }
