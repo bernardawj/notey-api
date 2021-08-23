@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.bernardawj</groupId>
     <artifactId>notey</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>notey</name>
     <description>API for Notey App</description>
     <properties>
