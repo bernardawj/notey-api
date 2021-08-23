@@ -16,6 +16,7 @@ public class Project {
     private String description;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
+    private LocalDateTime createdAt;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "project_id", updatable = false)
@@ -32,19 +33,21 @@ public class Project {
     public Project() {
     }
 
-    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt, User manager) {
-        this(name, description, startAt, endAt, manager, new ArrayList<>(), new ArrayList<>());
+    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt,
+                   LocalDateTime createdAt, User manager) {
+        this(name, description, startAt, endAt, createdAt, manager, new ArrayList<>(), new ArrayList<>());
     }
 
-    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt, User manager,
-                   List<ProjectUser> projectUsers, List<Task> tasks) {
+    public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt,
+                   LocalDateTime createdAt, User manager, List<Task> tasks, List<ProjectUser> projectUsers) {
         this.name = name;
         this.description = description;
         this.startAt = startAt;
         this.endAt = endAt;
-        this.manager = manager;
-        this.projectUsers = projectUsers;
+        this.createdAt = createdAt;
         this.tasks = tasks;
+        this.projectUsers = projectUsers;
+        this.manager = manager;
     }
 
     public Integer getId() {
@@ -109,5 +112,13 @@ public class Project {
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

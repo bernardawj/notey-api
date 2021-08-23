@@ -24,6 +24,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -226,7 +228,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         // Save to database
         Project project = new Project(createProjectDTO.getName(), createProjectDTO.getDescription(),
-                createProjectDTO.getStartAt(), createProjectDTO.getEndAt(), user);
+                createProjectDTO.getStartAt(), createProjectDTO.getEndAt(), LocalDateTime.now(ZoneOffset.UTC), user);
         this.projectRepository.save(project);
 
         return populateProjectDTO(project);
