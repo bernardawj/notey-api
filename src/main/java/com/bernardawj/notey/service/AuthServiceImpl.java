@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.Optional;
 
 @Service(value = "authService")
@@ -47,10 +48,11 @@ public class AuthServiceImpl implements AuthService {
 
         // Generate token
         final String jwt = jwtHelper.generateToken(userDetails);
+        final Date date = jwtHelper.extractExpiration(jwt);
 
         // Get user information and return DTO
         UserDTO user = this.getUserInformation(userDetails.getUsername());
-        TokenDTO token = new TokenDTO(jwt);
+        TokenDTO token = new TokenDTO(jwt, date);
         return new AuthDTO(user, token);
     }
 
@@ -74,6 +76,6 @@ public class AuthServiceImpl implements AuthService {
         Optional<User> optUser = this.userRepository.findUserByEmail(email);
         User user = optUser.orElseThrow(() -> new AuthServiceException("AuthService.USER_NOT_FOUND"));
 
-        return new UserDTO(user.getId(), user.getEmail(), null, user.getFirstName(), user.getLastName());
+        return new UserDTO(user.getId(), null, null, user.getFirstName(), user.getLastName());
     }
 }
