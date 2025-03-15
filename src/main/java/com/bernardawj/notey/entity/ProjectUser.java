@@ -3,7 +3,7 @@ package com.bernardawj.notey.entity;
 import com.bernardawj.notey.utility.ProjectUserCompositeKey;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "project_users")
@@ -21,17 +21,17 @@ public class ProjectUser {
     private Boolean hasAccepted;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", unique = true, insertable = false, updatable = false)
+    @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private Project project;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true, insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
     public ProjectUser() {
     }
 
-    public ProjectUser(Integer projectId, Integer userId, Boolean hasAccepted, List<Task> tasks) {
+    public ProjectUser(Integer projectId, Integer userId, Boolean hasAccepted, Set<Task> tasks) {
         this.projectId = projectId;
         this.userId = userId;
         this.hasAccepted = hasAccepted;

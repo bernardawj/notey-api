@@ -1,8 +1,8 @@
 package com.bernardawj.notey.entity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -18,36 +18,36 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "manager_id")
-    private List<Project> managedProjects;
+    private Set<Project> managedProjects;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private List<ProjectUser> projectUsers;
+    private Set<ProjectUser> projectUsers;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private List<Task> tasks;
+    private Set<Task> tasks;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-    private List<Notification> notifications;
+    private Set<Notification> notifications;
 
     public User() {
     }
 
     public User(String email, String password, String firstName, String lastName) {
-        this(email, password, firstName, lastName, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-                new ArrayList<>());
+        this(email, password, firstName, lastName, new HashSet<>(), new HashSet<>(), new HashSet<>(),
+                new HashSet<>());
     }
 
     public User(String email, String password, String firstName, String lastName,
-                List<Project> managedProjects) {
-        this(email, password, firstName, lastName, managedProjects, new ArrayList<>(), new ArrayList<>(),
-                new ArrayList<>());
+                Set<Project> managedProjects) {
+        this(email, password, firstName, lastName, managedProjects, new HashSet<>(), new HashSet<>(),
+                new HashSet<>());
     }
 
-    public User(String email, String password, String firstName, String lastName, List<Project> managedProjects,
-                List<ProjectUser> projectUsers, List<Task> tasks, List<Notification> notifications) {
+    public User(String email, String password, String firstName, String lastName, Set<Project> managedProjects,
+                Set<ProjectUser> projectUsers, Set<Task> tasks, Set<Notification> notifications) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
@@ -102,35 +102,35 @@ public class User {
         return firstName + " " + lastName;
     }
 
-    public List<Project> getManagedProjects() {
+    public Set<Project> getManagedProjects() {
         return managedProjects;
     }
 
-    public void setManagedProjects(List<Project> managedProjects) {
+    public void setManagedProjects(Set<Project> managedProjects) {
         this.managedProjects = managedProjects;
     }
 
-    public List<ProjectUser> getProjectUsers() {
+    public Set<ProjectUser> getProjectUsers() {
         return projectUsers;
     }
 
-    public void setProjectUsers(List<ProjectUser> projectUsers) {
+    public void setProjectUsers(Set<ProjectUser> projectUsers) {
         this.projectUsers = projectUsers;
     }
 
-    public List<Task> getTasks() {
+    public Set<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
+    public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
     }
 
-    public List<Notification> getNotifications() {
+    public Set<Notification> getNotifications() {
         return notifications;
     }
 
-    public void setNotifications(List<Notification> notifications) {
+    public void setNotifications(Set<Notification> notifications) {
         this.notifications = notifications;
     }
 }

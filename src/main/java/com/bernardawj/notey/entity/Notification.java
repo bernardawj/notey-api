@@ -20,11 +20,11 @@ public class Notification {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_user_id", unique = true)
+    @JoinColumn(name = "from_user_id")
     private User fromUser;
 
     public Notification() {

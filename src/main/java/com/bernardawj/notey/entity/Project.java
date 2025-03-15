@@ -2,8 +2,9 @@ package com.bernardawj.notey.entity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "projects")
@@ -20,14 +21,14 @@ public class Project {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "project_id", updatable = false)
-    private List<Task> tasks;
+    private Set<Task> tasks;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "project_id", updatable = false)
-    private List<ProjectUser> projectUsers;
+    private Set<ProjectUser> projectUsers;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", unique = true)
+    @JoinColumn(name = "manager_id")
     private User manager;
 
     public Project() {
@@ -35,11 +36,11 @@ public class Project {
 
     public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt,
                    LocalDateTime createdAt, User manager) {
-        this(name, description, startAt, endAt, createdAt, manager, new ArrayList<>(), new ArrayList<>());
+        this(name, description, startAt, endAt, createdAt, manager, new HashSet<>(), new HashSet<>());
     }
 
     public Project(String name, String description, LocalDateTime startAt, LocalDateTime endAt,
-                   LocalDateTime createdAt, User manager, List<Task> tasks, List<ProjectUser> projectUsers) {
+                   LocalDateTime createdAt, User manager, Set<Task> tasks, Set<ProjectUser> projectUsers) {
         this.name = name;
         this.description = description;
         this.startAt = startAt;
@@ -98,19 +99,19 @@ public class Project {
         this.manager = manager;
     }
 
-    public List<ProjectUser> getProjectUsers() {
+    public Set<ProjectUser> getProjectUsers() {
         return projectUsers;
     }
 
-    public void setProjectUsers(List<ProjectUser> projectUsers) {
+    public void setProjectUsers(Set<ProjectUser> projectUsers) {
         this.projectUsers = projectUsers;
     }
 
-    public List<Task> getTasks() {
+    public Set<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
+    public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
     }
 
