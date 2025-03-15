@@ -21,9 +21,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @SpringBootTest
 public class ProjectServiceTests {
@@ -182,12 +182,12 @@ public class ProjectServiceTests {
         User manager = new User();
         manager.setId(2);
 
-        ProjectUser projectUser = new ProjectUser(1, 1, false, new ArrayList<>());
+        ProjectUser projectUser = new ProjectUser(1, 1, false, new HashSet<>());
 
         Project project = new Project();
         project.setId(1);
         project.setManager(manager);
-        project.setProjectUsers(new ArrayList<>());
+        project.setProjectUsers(new HashSet<>());
         project.getProjectUsers().add(projectUser);
 
         // Mock the behavior of repository
@@ -270,7 +270,7 @@ public class ProjectServiceTests {
         User assignedUser = new User();
         assignedUser.setId(45);
 
-        List<Task> tasks = new ArrayList<>();
+        Set<Task> tasks = new HashSet<>();
 
         Task task1 = new Task();
         task1.setProject(relatedProject);
@@ -382,7 +382,7 @@ public class ProjectServiceTests {
         User assignedUser = new User();
         assignedUser.setId(1);
 
-        List<Task> tasks = new ArrayList<>();
+        Set<Task> tasks = new HashSet<>();
 
         Task task1 = new Task();
         task1.setProject(relatedProject);

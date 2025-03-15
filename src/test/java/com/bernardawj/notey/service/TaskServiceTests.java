@@ -1,6 +1,9 @@
 package com.bernardawj.notey.service;
 
-import com.bernardawj.notey.dto.task.*;
+import com.bernardawj.notey.dto.task.AssignTaskDTO;
+import com.bernardawj.notey.dto.task.CreateTaskDTO;
+import com.bernardawj.notey.dto.task.MarkTaskCompletionDTO;
+import com.bernardawj.notey.dto.task.UpdateTaskDTO;
 import com.bernardawj.notey.entity.Project;
 import com.bernardawj.notey.entity.ProjectUser;
 import com.bernardawj.notey.entity.Task;
@@ -19,9 +22,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @SpringBootTest
 public class TaskServiceTests {
@@ -259,7 +262,7 @@ public class TaskServiceTests {
         ProjectUser projectUser2 = new ProjectUser();
         projectUser2.setUserId(3);
 
-        List<ProjectUser> projectUsers = new ArrayList<>();
+        Set<ProjectUser> projectUsers = new HashSet<>();
         projectUsers.add(projectUser1);
         projectUsers.add(projectUser2);
 

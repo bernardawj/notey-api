@@ -3,7 +3,6 @@ package com.bernardawj.notey.controller;
 import com.bernardawj.notey.dto.auth.AuthDTO;
 import com.bernardawj.notey.dto.auth.LoginDTO;
 import com.bernardawj.notey.dto.auth.RegisterDTO;
-import com.bernardawj.notey.dto.auth.TokenDTO;
 import com.bernardawj.notey.dto.user.UserDTO;
 import com.bernardawj.notey.exception.AuthServiceException;
 import com.bernardawj.notey.service.AuthService;

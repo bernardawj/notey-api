@@ -2,8 +2,6 @@ package com.bernardawj.notey.dto.shared.filter;
 
 import com.bernardawj.notey.enums.TaskType;
 
-import javax.validation.constraints.NotNull;
-
 public class TaskFilterDTO extends FilterDTO {
 
     private TaskType type;

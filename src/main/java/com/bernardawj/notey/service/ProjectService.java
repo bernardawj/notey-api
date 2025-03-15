@@ -1,7 +1,6 @@
 package com.bernardawj.notey.service;
 
 import com.bernardawj.notey.dto.project.*;
-import com.bernardawj.notey.dto.project.ProjectAcceptanceDTO;
 import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.ProjectServiceException;
 import com.bernardawj.notey.exception.UserServiceException;

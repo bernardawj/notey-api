@@ -1,6 +1,5 @@
 package com.bernardawj.notey.controller;
 
-import com.bernardawj.notey.dto.task.GetProjectTasksDTO;
 import com.bernardawj.notey.dto.task.*;
 import com.bernardawj.notey.exception.NotificationServiceException;
 import com.bernardawj.notey.exception.TaskServiceException;
