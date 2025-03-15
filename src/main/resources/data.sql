@@ -72,3 +72,8 @@ CREATE TABLE notifications
                                                         'TASK_ALLOCATION_REMOVAL',
                                                         'TASK_MARK_COMPLETED', 'TASK_MARK_INCOMPLETE'))
 );
+
+insert into users (email, password, first_name, last_name) values ('ben@email.com', '$2a$10$hzhxq9Y/EduQwv2RNHgsXedN1Og2wRhevUOE/dj/IVKvd8ElMgSN2', 'Ben', 'Tan');
+insert into users (email, password, first_name, last_name) values ('emma@email.com', '$2a$10$avJJkp0Yz/rzH.sUMBziF.CqUYH5Q63wJR5IHWs7yKlOLpLozNCLm',	'Emma', 'Kang');
+insert into users (email, password, first_name, last_name) values ('daniel@email.com', '$2a$10$zc2MzCXGzn8lJ8vb69H4q.EpHVz/PqetDbfZAunUXNVs1ansq2i.y', 'Daniel', 'Wong');
+insert into users (email, password, first_name, last_name) values ('carly@email.com', '$2a$10$VUbwt5Ihr06BiSeC9A1gJeAmXBH.SZVZQ1RFUc2cIKxRtk0x8./vK', 'Carly', 'Rae');
